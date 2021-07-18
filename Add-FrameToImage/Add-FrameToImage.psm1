@@ -1,3 +1,5 @@
+Set-StrictMode -Version Latest
+
 Add-Type -AssemblyName System.Drawing
 
 function Add-FrameToImage {
@@ -55,6 +57,7 @@ function Add-FrameToImage {
             Write-Verbose $convertedPath
 
             $targetExtension = [System.IO.Path]::GetExtension($convertedPath)
+            
             if ($targetExtension.ToLower() -notin $imageExtensions) {
                 continue
             }
