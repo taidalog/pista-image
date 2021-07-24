@@ -27,29 +27,25 @@ function Add-BlackBarToImage {
         [Parameter(ParameterSetName="ARGB",
                    HelpMessage="ARGB value for Alpha."
                    )]
-        [ValidateRange(0,255)]
-        [int]
+        [byte]
         $Alpha = 255,
         
         [Parameter(ParameterSetName="ARGB",
                    HelpMessage="ARGB value for Red."
                    )]
-        [ValidateRange(0,255)]
-        [int]
+        [byte]
         $Red = 0,
         
         [Parameter(ParameterSetName="ARGB",
                    HelpMessage="ARGB value for Green."
                    )]
-        [ValidateRange(0,255)]
-        [int]
+        [byte]
         $Green = 0,
         
         [Parameter(ParameterSetName="ARGB",
                    HelpMessage="ARGB value for Blue."
                    )]
-        [ValidateRange(0,255)]
-        [int]
+        [byte]
         $Blue = 0,
 
         [Parameter(ParameterSetName="ColorName",

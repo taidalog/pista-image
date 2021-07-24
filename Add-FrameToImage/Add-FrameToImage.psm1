@@ -22,20 +22,16 @@ function Add-FrameToImage {
         [int]
         $LineWidth = 1,
 
-        [ValidateRange(0,255)]
-        [int]
+        [byte]
         $Alpha = 255,
         
-        [ValidateRange(0,255)]
-        [int]
+        [byte]
         $Red = 0,
         
-        [ValidateRange(0,255)]
-        [int]
+        [byte]
         $Green = 0,
 
-        [ValidateRange(0,255)]
-        [int]
+        [byte]
         $Blue = 0,
 
         [switch]
