@@ -163,9 +163,9 @@ function Invoke-TrimImage {
 
             # saving image
             $baseName = [System.IO.Path]::GetFileNameWithoutExtension($convertedPath)
-            Write-Verbose $baseName
+            $newBaseName = "$($baseName)_X$($xCoordinateForRectangle)Y$($yCoordinateForRectangle)W$($widthForRectangle)H$($heightForRectangle)"
+            $newPath = $convertedPath.Replace($baseName, $newBaseName)
             
-            $newPath = $convertedPath.Replace($baseName, "$($baseName)_X$($xCoordinateForRectangle)_Y$($yCoordinateForRectangle)")
             Write-Verbose $newPath
             
             $canvasBitmap.Save($newPath)

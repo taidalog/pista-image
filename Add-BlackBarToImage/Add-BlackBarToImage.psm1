@@ -254,7 +254,8 @@ function Add-BlackBarToImage {
 
             # saving image
             $baseName = [System.IO.Path]::GetFileNameWithoutExtension($convertedPath)
-            $newPath = $convertedPath -replace $baseName, "$($baseName)_A$($Alpha)R$($Red)G$($Green)B$($Blue)_X$($blackBarTopLeftX)Y$($blackBarTopLeftY)W$($blackBarWidth)H$($blackBarHeight)"
+            $newBaseName = "$($baseName)_A$($colorForBrush.A)R$($colorForBrush.R)G$($colorForBrush.G)B$($colorForBrush.B)_X$($blackBarTopLeftX)Y$($blackBarTopLeftY)W$($blackBarWidth)H$($blackBarHeight)"
+            $newPath = $convertedPath -replace $baseName, $newBaseName
             
             Write-Verbose $newPath
             

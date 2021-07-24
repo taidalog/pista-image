@@ -147,7 +147,8 @@ function Add-FrameToImage {
 
             # saving image
             $baseName = [System.IO.Path]::GetFileNameWithoutExtension($convertedPath)
-            $newPath = $convertedPath -replace $baseName, "$($baseName)_A$($Alpha)R$($Red)G$($Green)B$($Blue)_$($LineWidth)px"
+            $newBaseName = "$($baseName)_A$($innerColor.A)R$($innerColor.R)G$($innerColor.G)B$($innerColor.B)_$($LineWidth)px"
+            $newPath = $convertedPath -replace $baseName, $newBaseName
 
             Write-Verbose $newPath
 
