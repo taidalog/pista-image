@@ -1,19 +1,35 @@
+Set-StrictMode -Version Latest
+
 Add-Type -AssemblyName System.Drawing
 
 function Add-BlackBarToImage {
-    [CmdletBinding(DefaultParameterSetName="ARGB")]
+    [CmdletBinding(DefaultParameterSetName="CornerARGB")]
     param (
         # Specifies a path to one or more locations.
         [Parameter(Mandatory=$true,
                    Position=0,
-                   ParameterSetName="ARGB",
+                   ParameterSetName="CornerARGB",
                    ValueFromPipeline=$true,
                    ValueFromPipelineByPropertyName=$true,
                    HelpMessage="Path to one or more locations."
                    )]
         [Parameter(Mandatory=$true,
                    Position=0,
-                   ParameterSetName="ColorName",
+                   ParameterSetName="CornerColor",
+                   ValueFromPipeline=$true,
+                   ValueFromPipelineByPropertyName=$true,
+                   HelpMessage="Path to one or more locations."
+                   )]
+        [Parameter(Mandatory=$true,
+                   Position=0,
+                   ParameterSetName="RectangleARGB",
+                   ValueFromPipeline=$true,
+                   ValueFromPipelineByPropertyName=$true,
+                   HelpMessage="Path to one or more locations."
+                   )]
+        [Parameter(Mandatory=$true,
+                   Position=0,
+                   ParameterSetName="RectangleColor",
                    ValueFromPipeline=$true,
                    ValueFromPipelineByPropertyName=$true,
                    HelpMessage="Path to one or more locations."
@@ -24,88 +40,166 @@ function Add-BlackBarToImage {
         [string[]]
         $Path,
 
-        [Parameter(ParameterSetName="ARGB",
+        [Parameter(ParameterSetName="CornerARGB",
+                   HelpMessage="ARGB value for Alpha."
+                   )]
+        [Parameter(ParameterSetName="RectangleARGB",
                    HelpMessage="ARGB value for Alpha."
                    )]
         [byte]
         $Alpha = 255,
         
-        [Parameter(ParameterSetName="ARGB",
+        [Parameter(ParameterSetName="CornerARGB",
+                   HelpMessage="ARGB value for Red."
+                   )]
+        [Parameter(ParameterSetName="RectangleARGB",
                    HelpMessage="ARGB value for Red."
                    )]
         [byte]
         $Red = 0,
         
-        [Parameter(ParameterSetName="ARGB",
+        [Parameter(ParameterSetName="CornerARGB",
+                   HelpMessage="ARGB value for Green."
+                   )]
+        [Parameter(ParameterSetName="RectangleARGB",
                    HelpMessage="ARGB value for Green."
                    )]
         [byte]
         $Green = 0,
         
-        [Parameter(ParameterSetName="ARGB",
+        [Parameter(ParameterSetName="CornerARGB",
+                   HelpMessage="ARGB value for Blue."
+                   )]
+        [Parameter(ParameterSetName="RectangleARGB",
                    HelpMessage="ARGB value for Blue."
                    )]
         [byte]
         $Blue = 0,
 
-        [Parameter(ParameterSetName="ColorName",
-                   HelpMessage="Color name in <color> enums."
+        [Parameter(ParameterSetName="CornerColor",
+                   HelpMessage="Color struct or color name in <color> enums."
+                   )]
+        [Parameter(ParameterSetName="RectangleColor",
+                   HelpMessage="Color struct or color name in <color> enums."
                    )]
         [System.Drawing.Color]
-        $ColorName,
+        $Color,
 
         [Parameter(Mandatory=$true,
-                   ParameterSetName="ARGB",
+                   ParameterSetName="CornerARGB",
                    HelpMessage="X coordinate of top left corner."
                    )]
         [Parameter(Mandatory=$true,
-                   ParameterSetName="ColorName",
+                   ParameterSetName="CornerColor",
                    HelpMessage="X coordinate of top left corner."
                    )]
-        [Alias("CLeft")]
+        [Alias("Left")]
         [int]
         $TopLeftX,
         
         [Parameter(Mandatory=$true,
-                   ParameterSetName="ARGB",
+                   ParameterSetName="CornerARGB",
                    HelpMessage="Y coordinate of top left corner."
                    )]
         [Parameter(Mandatory=$true,
-                   ParameterSetName="ColorName",
+                   ParameterSetName="CornerColor",
                    HelpMessage="Y coordinate of top left corner."
                    )]
-        [Alias("CTop")]
+        [Alias("Top")]
         [int]
         $TopLeftY,
         
         [Parameter(Mandatory=$true,
-                   ParameterSetName="ARGB",
+                   ParameterSetName="CornerARGB",
                    HelpMessage="X coordinate of bottom right corner."
                    )]
         [Parameter(Mandatory=$true,
-                   ParameterSetName="ColorName",
+                   ParameterSetName="CornerColor",
                    HelpMessage="X coordinate of bottom right corner."
                    )]
-        [Alias("CRight")]
+        [Alias("Right")]
         [int]
         $BottomRightX,
         
         [Parameter(Mandatory=$true,
-                   ParameterSetName="ARGB",
+                   ParameterSetName="CornerARGB",
                    HelpMessage="Y coordinate of bottom right corner."
                    )]
         [Parameter(Mandatory=$true,
-                   ParameterSetName="ColorName",
+                   ParameterSetName="CornerColor",
                    HelpMessage="Y coordinate of bottom right corner."
                    )]
-        [Alias("CBottom")]
+        [Alias("Bottom")]
         [int]
-        $BottomRightY
+        $BottomRightY,
+
+        [Parameter(Mandatory=$true,
+                   ParameterSetName="RectangleARGB",
+                   HelpMessage="The x-coordinate of the upper-left corner of the rectangle."
+                   )]
+        [Parameter(Mandatory=$true,
+                   ParameterSetName="RectangleColor",
+                   HelpMessage="The x-coordinate of the upper-left corner of the rectangle."
+                   )]
+        [Alias()]
+        [int]
+        $X,
+
+        [Parameter(Mandatory=$true,
+                   ParameterSetName="RectangleArgb",
+                   HelpMessage="The y-coordinate of the upper-left corner of the rectangle."
+                   )]
+        [Parameter(Mandatory=$true,
+                   ParameterSetName="RectangleColor",
+                   HelpMessage="The y-coordinate of the upper-left corner of the rectangle."
+                   )]
+        [Alias()]
+        [int]
+        $Y,
+
+        [Parameter(Mandatory=$true,
+                   ParameterSetName="RectangleARGB",
+                   HelpMessage="The width of the rectangle."
+                   )]
+        [Parameter(Mandatory=$true,
+                   ParameterSetName="RectangleColor",
+                   HelpMessage="The width of the rectangle."
+                   )]
+        [Alias()]
+        [int]
+        $Width,
+
+        [Parameter(Mandatory=$true,
+                   ParameterSetName="RectangleARGB",
+                   HelpMessage="The height of the rectangle."
+                   )]
+        [Parameter(Mandatory=$true,
+                   ParameterSetName="RectangleColor",
+                   HelpMessage="The height of the rectangle."
+                   )]
+        [Alias()]
+        [int]
+        $Height
     )
     
     begin {
-        #creating pen object
-        $colorForBrush = [System.Drawing.Color]::FromArgb($Alpha, $Red, $Green, $Blue)
+        #creating brush object
+        
+        switch ($PSCmdlet.ParameterSetName) {
+            "CornerARGB" {
+                $colorForBrush = [System.Drawing.Color]::FromArgb($Alpha, $Red, $Green, $Blue)
+            }
+            "RectangleARGB" {
+                $colorForBrush = [System.Drawing.Color]::FromArgb($Alpha, $Red, $Green, $Blue)
+            }
+            "CornerColor" {
+                $colorForBrush = $Color
+            }
+            "RectangleColor" {
+                $colorForBrush = $Color
+            }
+        }
+
         $brush = [System.Drawing.SolidBrush]::new($colorForBrush)
         $imageExtensions = @(".gif", ".ico", ".jpeg", ".jpg", ".jpe", ".png")
     }
@@ -125,18 +219,42 @@ function Add-BlackBarToImage {
             $bitmap = [System.Drawing.Bitmap]::new($convertedPath)
             $graphics = [System.Drawing.Graphics]::FromImage($bitmap)
 
-            $maskWidth = $BottomRightX - $TopLeftX
-            $maskHeight = $BottomRightY - $TopLeftY
+            switch ($PSCmdlet.ParameterSetName) {
+                "CornerARGB" {
+                    $blackBarTopLeftX = $TopLeftX
+                    $blackBarTopLeftY = $TopLeftY
+                    $blackBarWidth = $BottomRightX - $TopLeftX
+                    $blackBarHeight = $BottomRightY - $TopLeftY
+                }
+                "CornerColor" {
+                    $blackBarTopLeftX = $TopLeftX
+                    $blackBarTopLeftY = $TopLeftY
+                    $blackBarWidth = $BottomRightX - $TopLeftX
+                    $blackBarHeight = $BottomRightY - $TopLeftY
+                }
+                "RectangleARGB" {
+                    $blackBarTopLeftX = $X
+                    $blackBarTopLeftY = $Y
+                    $blackBarWidth = $Width
+                    $blackBarHeight = $Height
+                }
+                "RectangleColor" {
+                    $blackBarTopLeftX = $X
+                    $blackBarTopLeftY = $Y
+                    $blackBarWidth = $Width
+                    $blackBarHeight = $Height
+                }
+            }
             
             #creating rectangle object
-            $rectangle = [System.Drawing.Rectangle]::new($TopLeftX, $TopLeftY, $maskWidth, $maskHeight)
+            $rectangle = [System.Drawing.Rectangle]::new($blackBarTopLeftX, $blackBarTopLeftY, $blackBarWidth, $blackBarHeight)
 
             $graphics.FillRectangle($brush, $rectangle)
             $graphics.Dispose()
 
             # saving image
             $baseName = [System.IO.Path]::GetFileNameWithoutExtension($convertedPath)
-            $newPath = $convertedPath -replace $baseName, "$($baseName)_A$($Alpha)R$($Red)G$($Green)B$($Blue)_W$($maskWidth)_H$($maskHeight)"
+            $newPath = $convertedPath -replace $baseName, "$($baseName)_A$($Alpha)R$($Red)G$($Green)B$($Blue)_X$($blackBarTopLeftX)Y$($blackBarTopLeftY)W$($blackBarWidth)H$($blackBarHeight)"
             
             Write-Verbose $newPath
             
