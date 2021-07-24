@@ -8,14 +8,14 @@ function Invoke-TrimImage {
         # Specifies a path to one or more locations.
         [Parameter(Mandatory=$true,
                    Position=0,
-                   ParameterSetName="Rectangle",
+                   ParameterSetName="Padding",
                    ValueFromPipeline=$true,
                    ValueFromPipelineByPropertyName=$true,
                    HelpMessage="Path to one or more locations."
                    )]
         [Parameter(Mandatory=$true,
                    Position=0,
-                   ParameterSetName="Padding",
+                   ParameterSetName="Rectangle",
                    ValueFromPipeline=$true,
                    ValueFromPipelineByPropertyName=$true,
                    HelpMessage="Path to one or more locations."
@@ -99,11 +99,11 @@ function Invoke-TrimImage {
         $Height,
 
         [Parameter(Mandatory=$false,
-                   ParameterSetName="Rectangle",
+                   ParameterSetName="Padding",
                    HelpMessage="Path to a directory to save in."
                    )]
         [Parameter(Mandatory=$false,
-                   ParameterSetName="Padding",
+                   ParameterSetName="Rectangle",
                    HelpMessage="Path to a directory to save in."
                    )]
         [Alias()]
@@ -131,24 +131,22 @@ function Invoke-TrimImage {
             #creating image object
             $sourceBitmap = [System.Drawing.Bitmap]::new($convertedPath)
             
-            if ($true) {
-                # Padding
-                [int]$xCoordinateForRectangle = $Left
-                [int]$yCoordinateForRectangle = $Top
-                [int]$widthForRectangle  = $sourceBitmap.Width - ($Right + $Left)
-                [int]$heightForRectangle = $sourceBitmap.Height - ($Top + $Bottom)
-            } else {
-                # Rectangle
-                [int]$xCoordinateForRectangle = $X
-                [int]$yCoordinateForRectangle = $Y
-                [int]$widthForRectangle  = $Width
-                [int]$heightForRectangle = $Height
+            switch ($PSCmdlet.ParameterSetName) {
+                "Padding" {
+                    [int]$xCoordinateForRectangle = $Left
+                    [int]$yCoordinateForRectangle = $Top
+                    [int]$widthForRectangle  = $sourceBitmap.Width - ($Right + $Left)
+                    [int]$heightForRectangle = $sourceBitmap.Height - ($Top + $Bottom)
+                }
+                "Rectangle" {
+                    [int]$xCoordinateForRectangle = $X
+                    [int]$yCoordinateForRectangle = $Y
+                    [int]$widthForRectangle  = $Width
+                    [int]$heightForRectangle = $Height
+                }
             }
-
-#            $heightToRemain = $sourceBitmap.Height - ($HeightToTrimFromTop + $HeightToTrimFromBottom)
             
             #creating rectangle object
-#            $sourceRecangle = [System.Drawing.Rectangle]::new(0, $HeightToTrimFromTop, $sourceBitmap.Width, $heightToRemain)
             $sourceRecangle      = [System.Drawing.Rectangle]::new($xCoordinateForRectangle, $yCoordinateForRectangle, $widthForRectangle, $heightForRectangle)
             $destinationRecangle = [System.Drawing.Rectangle]::new(0, 0, $sourceRecangle.Width, $sourceRecangle.Height)
 
