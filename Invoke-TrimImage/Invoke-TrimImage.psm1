@@ -62,25 +62,25 @@ function Invoke-TrimImage {
         [int]
         $Left = 0,
 
-        [Parameter(Mandatory=$false,
+        [Parameter(Mandatory=$true,
                    Position=1,
                    ParameterSetName="Rectangle",
                    HelpMessage="The x-coordinate of the upper-left corner of the rectangle."
                    )]
         [Alias()]
         [int]
-        $X = 0,
+        $X,
         
-        [Parameter(Mandatory=$false,
+        [Parameter(Mandatory=$true,
                    Position=2,
                    ParameterSetName="Rectangle",
                    HelpMessage="The y-coordinate of the upper-left corner of the rectangle."
                    )]
         [Alias()]
         [int]
-        $Y = 42,
+        $Y,
 
-        [Parameter(Mandatory=$false,
+        [Parameter(Mandatory=$true,
                    Position=3,
                    ParameterSetName="Rectangle",
                    HelpMessage="The width of the rectangle."
@@ -89,7 +89,7 @@ function Invoke-TrimImage {
         [int]
         $Width,
 
-        [Parameter(Mandatory=$false,
+        [Parameter(Mandatory=$true,
                    Position=4,
                    ParameterSetName="Rectangle",
                    HelpMessage="The height of the rectangle."
@@ -111,14 +111,6 @@ function Invoke-TrimImage {
         [ValidateScript({Test-Path $_ -PathType 'Container'})]
         [string]
         $Destination
-
-        <#
-        [int]
-        $HeightToTrimFromTop = 42,
-        
-        [int]
-        $HeightToTrimFromBottom = 105
-        #>
     )
     
     begin {
