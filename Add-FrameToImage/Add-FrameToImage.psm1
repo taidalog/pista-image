@@ -95,7 +95,20 @@ function Add-FrameToImage {
                    HelpMessage="Indicates that the line will be drawn inside the picture."
                    )]
         [switch]
-        $Inner
+        $Inner,
+
+        [Parameter(Mandatory=$false,
+                   # Position=1,
+                   # ParameterSetName="",
+                   # ValueFromPipeline=$true,
+                   ValueFromPipelineByPropertyName=$true,
+                   HelpMessage="Path to a directory to save in."
+                   )]
+        [Alias("DirectoryName")]
+        [ValidateNotNullOrEmpty()]
+        [ValidateScript({Test-Path $_ -PathType 'Container'})]
+        [string]
+        $Destination
     )
     
     begin {
@@ -146,9 +159,16 @@ function Add-FrameToImage {
             $graphics.Dispose()
 
             # saving image
+            if ($Destination -eq '') {
+                $innerDestination = Split-Path $convertedPath -Parent
+            } else {
+                $innerDestination = $Destination
+            }
+
             $baseName = [System.IO.Path]::GetFileNameWithoutExtension($convertedPath)
+            $originalExtension = [System.IO.Path]::GetExtension($convertedPath)
             $newBaseName = "$($baseName)_A$($innerColor.A)R$($innerColor.R)G$($innerColor.G)B$($innerColor.B)_$($LineWidth)px"
-            $newPath = $convertedPath -replace $baseName, $newBaseName
+            $newPath = Join-Path $innerDestination "$($newBaseName)$($originalExtension)"
 
             Write-Verbose $newPath
 

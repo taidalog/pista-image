@@ -99,14 +99,20 @@ function Invoke-TrimImage {
         $Height,
 
         [Parameter(Mandatory=$false,
+                   # Position=1,
                    ParameterSetName="Padding",
+                   # ValueFromPipeline=$true,
+                   ValueFromPipelineByPropertyName=$true,
                    HelpMessage="Path to a directory to save in."
                    )]
         [Parameter(Mandatory=$false,
+                   # Position=1,
                    ParameterSetName="Rectangle",
+                   # ValueFromPipeline=$true,
+                   ValueFromPipelineByPropertyName=$true,
                    HelpMessage="Path to a directory to save in."
                    )]
-        [Alias()]
+        [Alias("DirectoryName")]
         [ValidateNotNullOrEmpty()]
         [ValidateScript({Test-Path $_ -PathType 'Container'})]
         [string]
@@ -160,9 +166,16 @@ function Invoke-TrimImage {
             $sourceBitmap.Dispose()
 
             # saving image
+            if ($Destination -eq '') {
+                $innerDestination = Split-Path $convertedPath -Parent
+            } else {
+                $innerDestination = $Destination
+            }
+
             $baseName = [System.IO.Path]::GetFileNameWithoutExtension($convertedPath)
+            $originalExtension = [System.IO.Path]::GetExtension($convertedPath)
             $newBaseName = "$($baseName)_X$($xCoordinateForRectangle)Y$($yCoordinateForRectangle)W$($widthForRectangle)H$($heightForRectangle)"
-            $newPath = $convertedPath.Replace($baseName, $newBaseName)
+            $newPath = Join-Path $innerDestination "$($newBaseName)$($originalExtension)"
             
             Write-Verbose $newPath
             
