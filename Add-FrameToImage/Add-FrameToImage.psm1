@@ -97,18 +97,24 @@ function Add-FrameToImage {
         [switch]
         $Inner,
 
+        # Specifies the path to a directory to save in.
         [Parameter(Mandatory=$false,
-                   # Position=1,
-                   # ParameterSetName="",
-                   # ValueFromPipeline=$true,
-                   ValueFromPipelineByPropertyName=$true,
-                   HelpMessage="Path to a directory to save in."
+                   ValueFromPipelineByPropertyName=$true
                    )]
         [Alias("DirectoryName")]
         [ValidateNotNullOrEmpty()]
         [ValidateScript({Test-Path $_ -PathType 'Container'})]
         [string]
-        $Destination
+        $Destination,
+
+        # Specifies the name to save as.
+        [Parameter(Mandatory=$false,
+                   ValueFromPipelineByPropertyName=$true
+                   )]
+        [Alias()]
+        [ValidateNotNullOrEmpty()]
+        [string]
+        $Name
     )
     
     begin {
@@ -133,9 +139,9 @@ function Add-FrameToImage {
             $convertedPath = Convert-Path $p
             Write-Verbose $convertedPath
 
-            $targetExtension = [System.IO.Path]::GetExtension($convertedPath)
+            $originalExtension = [System.IO.Path]::GetExtension($convertedPath)
             
-            if ($targetExtension.ToLower() -notin $imageExtensions) {
+            if ($originalExtension.ToLower() -notin $imageExtensions) {
                 continue
             }
 
@@ -159,16 +165,26 @@ function Add-FrameToImage {
             $graphics.Dispose()
 
             # saving image
-            if ($Destination -eq '') {
-                $innerDestination = Split-Path $convertedPath -Parent
+            if ($Destination -ne '') {
+                [string]$innerDestination = Convert-Path -Path $Destination
             } else {
-                $innerDestination = $Destination
+                [string]$innerDestination = Split-Path $convertedPath -Parent
             }
 
-            $baseName = [System.IO.Path]::GetFileNameWithoutExtension($convertedPath)
-            $originalExtension = [System.IO.Path]::GetExtension($convertedPath)
-            $newBaseName = "$($baseName)_A$($innerColor.A)R$($innerColor.R)G$($innerColor.G)B$($innerColor.B)_$($LineWidth)px"
-            $newPath = Join-Path $innerDestination "$($newBaseName)$($originalExtension)"
+            Write-Verbose $innerDestination
+            
+            Write-Verbose $Name
+
+            [string]$originalName = Split-Path $convertedPath -Leaf
+
+            if ($Name -notin @('', $originalName)) {
+                [string]$newPath = Join-Path $innerDestination $Name
+            } else {
+                [string]$baseName = [System.IO.Path]::GetFileNameWithoutExtension($convertedPath)
+                [string]$newName = "$($baseName)_A$($innerColor.A)R$($innerColor.R)G$($innerColor.G)B$($innerColor.B)_$($LineWidth)px$($originalExtension)"
+                # [string]$newName = "$($baseName)_$(Get-Date -Format 'yyyy-MM-dd_HH-mm-ss')$($originalExtension)"
+                [string]$newPath = Join-Path $innerDestination $newName
+            }
 
             Write-Verbose $newPath
 

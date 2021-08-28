@@ -83,7 +83,7 @@ function Add-BlackBarToImage {
                    HelpMessage="Color struct or color name in <color> enums."
                    )]
         [System.Drawing.Color]
-        $Color,
+        $Color = [System.Drawing.Color]::Black,
 
         [Parameter(Mandatory=$true,
                    ParameterSetName="CornerARGB",
@@ -181,18 +181,24 @@ function Add-BlackBarToImage {
         [int]
         $Height,
 
+        # Specifies the path to a directory to save in.
         [Parameter(Mandatory=$false,
-                   # Position=1,
-                   # ParameterSetName="",
-                   # ValueFromPipeline=$true,
-                   ValueFromPipelineByPropertyName=$true,
-                   HelpMessage="Path to a directory to save in."
+                   ValueFromPipelineByPropertyName=$true
                    )]
         [Alias("DirectoryName")]
         [ValidateNotNullOrEmpty()]
         [ValidateScript({Test-Path $_ -PathType 'Container'})]
         [string]
-        $Destination
+        $Destination,
+
+        # Specifies the name to save as.
+        [Parameter(Mandatory=$false,
+                   ValueFromPipelineByPropertyName=$true
+                   )]
+        [Alias()]
+        [ValidateNotNullOrEmpty()]
+        [string]
+        $Name
     )
     
     begin {
@@ -223,8 +229,8 @@ function Add-BlackBarToImage {
             $convertedPath = Convert-Path $p
             Write-Verbose $convertedPath
 
-            $targetExtension = [System.IO.Path]::GetExtension($convertedPath)
-            if ($targetExtension.ToLower() -notin $imageExtensions) {
+            $originalExtension = [System.IO.Path]::GetExtension($convertedPath)
+            if ($originalExtension.ToLower() -notin $imageExtensions) {
                 continue
             }
 
@@ -266,16 +272,26 @@ function Add-BlackBarToImage {
             $graphics.Dispose()
 
             # saving image
-            if ($Destination -eq '') {
-                $innerDestination = Split-Path $convertedPath -Parent
+            if ($Destination -ne '') {
+                [string]$innerDestination = Convert-Path -Path $Destination
             } else {
-                $innerDestination = $Destination
+                [string]$innerDestination = Split-Path $convertedPath -Parent
             }
 
-            $baseName = [System.IO.Path]::GetFileNameWithoutExtension($convertedPath)
-            $originalExtension = [System.IO.Path]::GetExtension($convertedPath)
-            $newBaseName = "$($baseName)_A$($colorForBrush.A)R$($colorForBrush.R)G$($colorForBrush.G)B$($colorForBrush.B)_X$($blackBarTopLeftX)Y$($blackBarTopLeftY)W$($blackBarWidth)H$($blackBarHeight)"
-            $newPath = Join-Path $innerDestination "$($newBaseName)$($originalExtension)"
+            Write-Verbose $innerDestination
+            
+            Write-Verbose $Name
+
+            [string]$originalName = Split-Path $convertedPath -Leaf
+
+            if ($Name -notin @('', $originalName)) {
+                [string]$newPath = Join-Path $innerDestination $Name
+            } else {
+                [string]$baseName = [System.IO.Path]::GetFileNameWithoutExtension($convertedPath)
+                [string]$newName = "$($baseName)_A$($colorForBrush.A)R$($colorForBrush.R)G$($colorForBrush.G)B$($colorForBrush.B)_X$($blackBarTopLeftX)Y$($blackBarTopLeftY)W$($blackBarWidth)H$($blackBarHeight)$($originalExtension)"
+                # [string]$newName = "$($baseName)_$(Get-Date -Format 'yyyy-MM-dd_HH-mm-ss')$($originalExtension)"
+                [string]$newPath = Join-Path $innerDestination $newName
+            }
             
             Write-Verbose $newPath
             
