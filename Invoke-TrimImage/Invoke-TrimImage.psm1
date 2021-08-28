@@ -264,7 +264,9 @@ function Invoke-TrimImage {
     }
     
     end {
-        
+        if ($PSCmdlet.ParameterSetName -eq 'Blank') {
+            $brush.Dispose()
+        }
     }
 }
 
