@@ -2,20 +2,14 @@ Set-StrictMode -Version Latest
 
 Add-Type -AssemblyName System.Drawing
 
+Import-Module (Join-Path $PSScriptRoot Get-NotBlankRange.psm1) -Force
+
 function Invoke-TrimImage {
     [CmdletBinding(DefaultParameterSetName="Padding")]
     param (
         # Specifies a path to one or more locations.
         [Parameter(Mandatory=$true,
                    Position=0,
-                   ParameterSetName="Padding",
-                   ValueFromPipeline=$true,
-                   ValueFromPipelineByPropertyName=$true,
-                   HelpMessage="Path to one or more locations."
-                   )]
-        [Parameter(Mandatory=$true,
-                   Position=0,
-                   ParameterSetName="Rectangle",
                    ValueFromPipeline=$true,
                    ValueFromPipelineByPropertyName=$true,
                    HelpMessage="Path to one or more locations."
@@ -26,42 +20,43 @@ function Invoke-TrimImage {
         [string[]]
         $Path,
 
+        # Specifies the x coordinate of bottom right corner.
         [Parameter(Mandatory=$false,
                    Position=1,
-                   ParameterSetName="Padding",
-                   HelpMessage="X coordinate of bottom right corner."
+                   ParameterSetName="Padding"
                    )]
         [Alias()]
         [int]
         $Top = 0,
 
+        # Specifies the x coordinate of bottom right corner.
         [Parameter(Mandatory=$false,
                    Position=2,
-                   ParameterSetName="Padding",
-                   HelpMessage="X coordinate of bottom right corner."
+                   ParameterSetName="Padding"
                    )]
         [Alias()]
         [int]
         $Right = 0,
         
+        # Specifies the y coordinate of bottom right corner.
         [Parameter(Mandatory=$false,
                    Position=3,
-                   ParameterSetName="Padding",
-                   HelpMessage="Y coordinate of bottom right corner."
+                   ParameterSetName="Padding"
                    )]
         [Alias()]
         [int]
         $Bottom = 0,
 
+        # Specifies the y coordinate of bottom right corner.
         [Parameter(Mandatory=$false,
                    Position=4,
-                   ParameterSetName="Padding",
-                   HelpMessage="Y coordinate of bottom right corner."
+                   ParameterSetName="Padding"
                    )]
         [Alias()]
         [int]
         $Left = 0,
 
+        # Specifies the x-coordinate of the upper-left corner of the rectangle.
         [Parameter(Mandatory=$true,
                    Position=1,
                    ParameterSetName="Rectangle",
@@ -71,6 +66,7 @@ function Invoke-TrimImage {
         [int]
         $X,
         
+        # Specifies the y-coordinate of the upper-left corner of the rectangle.
         [Parameter(Mandatory=$true,
                    Position=2,
                    ParameterSetName="Rectangle",
@@ -80,6 +76,7 @@ function Invoke-TrimImage {
         [int]
         $Y,
 
+        # Specifies the width of the rectangle.
         [Parameter(Mandatory=$true,
                    Position=3,
                    ParameterSetName="Rectangle",
@@ -89,6 +86,7 @@ function Invoke-TrimImage {
         [int]
         $Width,
 
+        # Specifies the  height of the rectangle.
         [Parameter(Mandatory=$true,
                    Position=4,
                    ParameterSetName="Rectangle",
@@ -98,25 +96,66 @@ function Invoke-TrimImage {
         [int]
         $Height,
 
+        # Blank
         [Parameter(Mandatory=$false,
-                   # Position=1,
-                   ParameterSetName="Padding",
-                   # ValueFromPipeline=$true,
-                   ValueFromPipelineByPropertyName=$true,
-                   HelpMessage="Path to a directory to save in."
+                   ParameterSetName="Blank"
                    )]
+        [switch]
+        $Blank,
+
+        # Color
         [Parameter(Mandatory=$false,
-                   # Position=1,
-                   ParameterSetName="Rectangle",
-                   # ValueFromPipeline=$true,
-                   ValueFromPipelineByPropertyName=$true,
-                   HelpMessage="Path to a directory to save in."
+                   ParameterSetName="Blank"
+                   )]
+        [System.Drawing.Color]
+        $Color,
+
+        # Specifies the margin for top.
+        [Parameter(Mandatory=$false,
+                   ParameterSetName="Blank"
+                   )]
+        [int]
+        $MarginTop = 0,
+
+        # Specifies the margin for right.
+        [Parameter(Mandatory=$false,
+                   ParameterSetName="Blank"
+                   )]
+        [int]
+        $MarginRight = 0,
+
+        # Specifies the margin for bottom.
+        [Parameter(Mandatory=$false,
+                   ParameterSetName="Blank"
+                   )]
+        [int]
+        $MarginBottom = 0,
+
+        # Specifies the margin for left.
+        [Parameter(Mandatory=$false,
+                   ParameterSetName="Blank"
+                   )]
+        [int]
+        $MarginLeft = 0,
+
+        # Specifies the path to a directory to save in.
+        [Parameter(Mandatory=$false,
+                   ValueFromPipelineByPropertyName=$true
                    )]
         [Alias("DirectoryName")]
         [ValidateNotNullOrEmpty()]
         [ValidateScript({Test-Path $_ -PathType 'Container'})]
         [string]
-        $Destination
+        $Destination,
+
+        # Specifies the name to save as.
+        [Parameter(Mandatory=$false,
+                   ValueFromPipelineByPropertyName=$true
+                   )]
+        [Alias()]
+        [ValidateNotNullOrEmpty()]
+        [string]
+        $Name
     )
     
     begin {
@@ -126,56 +165,94 @@ function Invoke-TrimImage {
     process {
         foreach ($p in $Path) {
             
-            $convertedPath = Convert-Path $p
+            [string]$convertedPath = Convert-Path $p
             Write-Verbose $convertedPath
 
-            $targetExtension = [System.IO.Path]::GetExtension($convertedPath)
-            if ($targetExtension.ToLower() -notin $imageExtensions) {
+            [string]$originalExtension = [System.IO.Path]::GetExtension($convertedPath)
+            if ($originalExtension.ToLower() -notin $imageExtensions) {
                 continue
             }
             
             #creating image object
             $sourceBitmap = [System.Drawing.Bitmap]::new($convertedPath)
             
+            $rectangleParameters = [PSCustomObject]@{
+                X = $null
+                Y = $null
+                Width = $null
+                Height = $null
+            }
+            
             switch ($PSCmdlet.ParameterSetName) {
                 "Padding" {
-                    [int]$xCoordinateForRectangle = $Left
-                    [int]$yCoordinateForRectangle = $Top
-                    [int]$widthForRectangle  = $sourceBitmap.Width - ($Right + $Left)
-                    [int]$heightForRectangle = $sourceBitmap.Height - ($Top + $Bottom)
+                    $rectangleParameters.X = $Left
+                    $rectangleParameters.Y = $Top
+                    $rectangleParameters.Width  = $sourceBitmap.Width - ($Right + $Left)
+                    $rectangleParameters.Height = $sourceBitmap.Height - ($Top + $Bottom)
                 }
                 "Rectangle" {
-                    [int]$xCoordinateForRectangle = $X
-                    [int]$yCoordinateForRectangle = $Y
-                    [int]$widthForRectangle  = $Width
-                    [int]$heightForRectangle = $Height
+                    $rectangleParameters.X = $X
+                    $rectangleParameters.Y = $Y
+                    $rectangleParameters.Width  = $Width
+                    $rectangleParameters.Height = $Height
+                }
+                "Blank" {
+                    if ($null -ne $Color) {
+                        $backGroundColor = $Color
+                    } else {
+                        $firstPixel = $sourceBitmap.GetPixel(0, 0)
+                        $backGroundColor = [System.Drawing.Color]::FromArgb($firstPixel.A, $firstPixel.R, $firstPixel.G, $firstPixel.B)
+                    }
+
+                    $blankRectangle = Get-NotBlankRange -Bitmap $sourceBitmap -Color $backGroundColor
+                    
+                    $rectangleParameters.X = $blankRectangle.X - $MarginLeft
+                    $rectangleParameters.Y = $blankRectangle.Y - $MarginTop
+                    $rectangleParameters.Width  = $blankRectangle.Width + $MarginLeft + $MarginRight
+                    $rectangleParameters.Height = $blankRectangle.Height + $MarginTop + $MarginBottom
                 }
             }
             
             #creating rectangle object
-            $sourceRecangle      = [System.Drawing.Rectangle]::new($xCoordinateForRectangle, $yCoordinateForRectangle, $widthForRectangle, $heightForRectangle)
-            $destinationRecangle = [System.Drawing.Rectangle]::new(0, 0, $sourceRecangle.Width, $sourceRecangle.Height)
+            $sourceRecangle      = [System.Drawing.Rectangle]::new($rectangleParameters.X, $rectangleParameters.Y, $rectangleParameters.Width, $rectangleParameters.Height)
+            $destinationRecatngle = [System.Drawing.Rectangle]::new(0, 0, $sourceRecangle.Width, $sourceRecangle.Height)
 
-            $canvasBitmap = [System.Drawing.Bitmap]::new($destinationRecangle.Width, $destinationRecangle.Height)
+            $canvasBitmap = [System.Drawing.Bitmap]::new($destinationRecatngle.Width, $destinationRecatngle.Height)
             $canvasGraphics = [System.Drawing.Graphics]::FromImage($canvasBitmap)
 
-            $canvasGraphics.DrawImage($sourceBitmap, $destinationRecangle, $sourceRecangle, [System.Drawing.GraphicsUnit]::Pixel)
+            if ($PSCmdlet.ParameterSetName -eq 'Blank') {
+                $brush = [System.Drawing.SolidBrush]::new($backGroundColor)
+                $canvasGraphics.FillRectangle($brush, $destinationRecatngle)
+            }
+            
+            $canvasGraphics.DrawImage($sourceBitmap, $destinationRecatngle, $sourceRecangle, [System.Drawing.GraphicsUnit]::Pixel)
+
             $canvasGraphics.Dispose()
             $sourceRecangle = $null
-            $destinationRecangle = $null
+            $destinationRecatngle = $null
             $sourceBitmap.Dispose()
 
             # saving image
-            if ($Destination -eq '') {
-                $innerDestination = Split-Path $convertedPath -Parent
+            if ($Destination -ne '') {
+                [string]$innerDestination = Convert-Path -Path $Destination
             } else {
-                $innerDestination = $Destination
+                [string]$innerDestination = Split-Path $convertedPath -Parent
             }
 
-            $baseName = [System.IO.Path]::GetFileNameWithoutExtension($convertedPath)
-            $originalExtension = [System.IO.Path]::GetExtension($convertedPath)
-            $newBaseName = "$($baseName)_X$($xCoordinateForRectangle)Y$($yCoordinateForRectangle)W$($widthForRectangle)H$($heightForRectangle)"
-            $newPath = Join-Path $innerDestination "$($newBaseName)$($originalExtension)"
+            Write-Verbose $innerDestination
+            
+            Write-Verbose $Name
+            
+            [string]$originalName = Split-Path $convertedPath -Leaf
+
+            if ($Name -notin @('', $originalName)) {
+                [string]$newPath = Join-Path $innerDestination $Name
+            } else {
+                [string]$baseName = [System.IO.Path]::GetFileNameWithoutExtension($convertedPath)
+                [string]$newName = "$($baseName)_X$($rectangleParameters.X)Y$($rectangleParameters.Y)W$($rectangleParameters.Width)H$($rectangleParameters.Height)$($originalExtension)"
+                # [string]$newName = "$($baseName)_$(Get-Date -Format 'yyyy-MM-dd_HH-mm-ss')$($originalExtension)"
+                [string]$newPath = Join-Path $innerDestination $newName
+            }
             
             Write-Verbose $newPath
             
