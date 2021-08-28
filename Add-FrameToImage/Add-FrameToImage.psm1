@@ -8,14 +8,6 @@ function Add-FrameToImage {
         # Specifies a path to one or more locations.
         [Parameter(Mandatory=$true,
                    Position=0,
-                   ParameterSetName="ARGB",
-                   ValueFromPipeline=$true,
-                   ValueFromPipelineByPropertyName=$true,
-                   HelpMessage="Path to one or more locations."
-                   )]
-        [Parameter(Mandatory=$true,
-                   Position=0,
-                   ParameterSetName="Color",
                    ValueFromPipeline=$true,
                    ValueFromPipelineByPropertyName=$true,
                    HelpMessage="Path to one or more locations."
@@ -26,73 +18,71 @@ function Add-FrameToImage {
         [string[]]
         $Path,
 
+        # Specifies the line width.
         [Parameter(Mandatory=$false,
                    Position=1,
-                   ParameterSetName="ARGB",
-                   HelpMessage="ARGB value for Alpha."
+                   ParameterSetName="ARGB"
                    )]
-        [Alias()]
-        [byte]
-        $Alpha = 255,
-        
-        [Parameter(Mandatory=$false,
-                   Position=2,
-                   ParameterSetName="ARGB",
-                   HelpMessage="ARGB value for Red."
-                   )]
-        [Alias()]
-        [byte]
-        $Red = 0,
-        
-        [Parameter(Mandatory=$false,
-                   Position=3,
-                   ParameterSetName="ARGB",
-                   HelpMessage="ARGB value for Green."
-                   )]
-        [Alias()]
-        [byte]
-        $Green = 0,
-
-        [Parameter(Mandatory=$false,
-                   Position=4,
-                   ParameterSetName="ARGB",
-                   HelpMessage="ARGB value for Blue."
-                   )]
-        [Alias()]
-        [byte]
-        $Blue = 0,
-
         [Parameter(Mandatory=$false,
                    Position=1,
-                   ParameterSetName="Color",
-                   HelpMessage="Color struct or color name in <color> enums."
-                   )]
-        [Alias()]
-        [System.Drawing.Color]
-        $Color,
-
-        [Parameter(Mandatory=$false,
-                   Position=5,
-                   ParameterSetName="ARGB",
-                   HelpMessage="Width of line."
-                   )]
-        [Parameter(Mandatory=$false,
-                   Position=2,
-                   ParameterSetName="Color",
-                   HelpMessage="Width of line."
+                   ParameterSetName="Color"
                    )]
         [Alias()]
         [ValidateScript({$_ -gt 0})]
         [int]
         $LineWidth = 1,
 
+        # Specifies an color by .Net Color struct or color name in [System.Drawing.Color] enums.
         [Parameter(Mandatory=$false,
-                   ParameterSetName="ARGB",
-                   HelpMessage="Indicates that the line will be drawn inside the picture."
+                   Position=2,
+                   ParameterSetName="Color"
+                   )]
+        [Alias()]
+        [System.Drawing.Color]
+        $Color = [System.Drawing.Color]::Black,
+
+        # Specifies an ARGB value for Alpha.
+        [Parameter(Mandatory=$false,
+                   Position=2,
+                   ParameterSetName="ARGB"
+                   )]
+        [Alias()]
+        [byte]
+        $Alpha = 255,
+        
+        # Specifies an ARGB value for Red.
+        [Parameter(Mandatory=$false,
+                   Position=3,
+                   ParameterSetName="ARGB"
+                   )]
+        [Alias()]
+        [byte]
+        $Red = 0,
+        
+        # Specifies an ARGB value for Green.
+        [Parameter(Mandatory=$false,
+                   Position=4,
+                   ParameterSetName="ARGB"
+                   )]
+        [Alias()]
+        [byte]
+        $Green = 0,
+
+        # Specifies an ARGB value for Blue.
+        [Parameter(Mandatory=$false,
+                   Position=5,
+                   ParameterSetName="ARGB"
+                   )]
+        [Alias()]
+        [byte]
+        $Blue = 0,
+
+        # Specifies whether the line will be drawn inside the picture.
+        [Parameter(Mandatory=$false,
+                   ParameterSetName="ARGB"
                    )]
         [Parameter(Mandatory=$false,
-                   ParameterSetName="Color",
-                   HelpMessage="Indicates that the line will be drawn inside the picture."
+                   ParameterSetName="Color"
                    )]
         [switch]
         $Inner,
