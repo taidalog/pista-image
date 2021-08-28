@@ -303,7 +303,9 @@ function Add-BlackBarToImage {
     }
     
     end {
-        $brush.Dispose()
+        if ($PSCmdlet.ParameterSetName -in @('CornerColor', 'RectangleColor')) {
+            $brush.Dispose()
+        }
     }
 }
 
