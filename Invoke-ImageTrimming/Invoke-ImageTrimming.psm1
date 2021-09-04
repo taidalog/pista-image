@@ -4,7 +4,7 @@ Add-Type -AssemblyName System.Drawing
 
 Import-Module (Join-Path $PSScriptRoot Get-NotBlankRange.psm1) -Force
 
-function Invoke-TrimImage {
+function Invoke-ImageTrimming {
     [CmdletBinding(DefaultParameterSetName="Padding")]
     param (
         # Specifies a path to one or more locations.
@@ -270,7 +270,7 @@ function Invoke-TrimImage {
     }
 }
 
-Set-Alias -Name itrim -Value Invoke-TrimImage
-Set-Alias -Name trimg -Value Invoke-TrimImage
+Set-Alias -Name itrim -Value Invoke-ImageTrimming
+Set-Alias -Name trimg -Value Invoke-ImageTrimming
 
 Export-ModuleMember -Function * -Alias *
