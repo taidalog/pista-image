@@ -1,4 +1,6 @@
-﻿Add-Type -AssemblyName System.Drawing
+﻿Set-StrictMode -Version Latest
+
+Add-Type -AssemblyName System.Drawing
 
 function Save-ExeIcon {
     <#
