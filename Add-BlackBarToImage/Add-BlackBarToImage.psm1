@@ -3,7 +3,7 @@ Set-StrictMode -Version Latest
 Add-Type -AssemblyName System.Drawing
 
 function Add-BlackBarToImage {
-    [CmdletBinding(DefaultParameterSetName="CornerARGB")]
+    [CmdletBinding(DefaultParameterSetName="CornerArgb")]
     param (
         # Specifies a path to one or more locations.
         [Parameter(Mandatory=$true,
@@ -21,12 +21,17 @@ function Add-BlackBarToImage {
         # Specifies an x coordinate of top left corner.
         [Parameter(Mandatory=$true,
                    Position=1,
-                   ParameterSetName="CornerARGB",
+                   ParameterSetName="CornerArgb",
                    HelpMessage="X coordinate of top left corner."
                    )]
         [Parameter(Mandatory=$true,
                    Position=1,
                    ParameterSetName="CornerColor",
+                   HelpMessage="X coordinate of top left corner."
+                   )]
+        [Parameter(Mandatory=$true,
+                   Position=1,
+                   ParameterSetName="CornerUseBackgroundColor",
                    HelpMessage="X coordinate of top left corner."
                    )]
         [Alias("Left")]
@@ -36,12 +41,17 @@ function Add-BlackBarToImage {
         # Specifies a y coordinate of top left corner.
         [Parameter(Mandatory=$true,
                    Position=2,
-                   ParameterSetName="CornerARGB",
+                   ParameterSetName="CornerArgb",
                    HelpMessage="Y coordinate of top left corner."
                    )]
         [Parameter(Mandatory=$true,
                    Position=2,
                    ParameterSetName="CornerColor",
+                   HelpMessage="Y coordinate of top left corner."
+                   )]
+        [Parameter(Mandatory=$true,
+                   Position=2,
+                   ParameterSetName="CornerUseBackgroundColor",
                    HelpMessage="Y coordinate of top left corner."
                    )]
         [Alias("Top")]
@@ -51,12 +61,17 @@ function Add-BlackBarToImage {
         # Specifies an x coordinate of bottom right corner.
         [Parameter(Mandatory=$true,
                    Position=3,
-                   ParameterSetName="CornerARGB",
+                   ParameterSetName="CornerArgb",
                    HelpMessage="X coordinate of bottom right corner."
                    )]
         [Parameter(Mandatory=$true,
                    Position=3,
                    ParameterSetName="CornerColor",
+                   HelpMessage="X coordinate of bottom right corner."
+                   )]
+        [Parameter(Mandatory=$true,
+                   Position=3,
+                   ParameterSetName="CornerUseBackgroundColor",
                    HelpMessage="X coordinate of bottom right corner."
                    )]
         [Alias("Right")]
@@ -66,12 +81,17 @@ function Add-BlackBarToImage {
         # Specifies a y coordinate of bottom right corner.
         [Parameter(Mandatory=$true,
                    Position=4,
-                   ParameterSetName="CornerARGB",
+                   ParameterSetName="CornerArgb",
                    HelpMessage="Y coordinate of bottom right corner."
                    )]
         [Parameter(Mandatory=$true,
                    Position=4,
                    ParameterSetName="CornerColor",
+                   HelpMessage="Y coordinate of bottom right corner."
+                   )]
+        [Parameter(Mandatory=$true,
+                   Position=4,
+                   ParameterSetName="CornerUseBackgroundColor",
                    HelpMessage="Y coordinate of bottom right corner."
                    )]
         [Alias("Bottom")]
@@ -81,13 +101,18 @@ function Add-BlackBarToImage {
         # Specifies the x-coordinate of the upper-left corner of the rectangle.
         [Parameter(Mandatory=$true,
                    Position=1,
-                   ParameterSetName="RectangleARGB",
-                   HelpMessage="The x-coordinate of the upper-left corner of the rectangle."
+                   ParameterSetName="CoordinateArgb",
+                   HelpMessage="The X coordinate of the upper-left corner of the rectangle."
                    )]
         [Parameter(Mandatory=$true,
                    Position=1,
-                   ParameterSetName="RectangleColor",
-                   HelpMessage="The x-coordinate of the upper-left corner of the rectangle."
+                   ParameterSetName="CoordinateColor",
+                   HelpMessage="The X coordinate of the upper-left corner of the rectangle."
+                   )]
+        [Parameter(Mandatory=$true,
+                   Position=1,
+                   ParameterSetName="CoordinateUseBackgroundColor",
+                   HelpMessage="The X coordinate of the upper-left corner of the rectangle."
                    )]
         [Alias()]
         [int]
@@ -96,13 +121,18 @@ function Add-BlackBarToImage {
         # Specifies the y-coordinate of the upper-left corner of the rectangle.
         [Parameter(Mandatory=$true,
                    Position=2,
-                   ParameterSetName="RectangleArgb",
-                   HelpMessage="The y-coordinate of the upper-left corner of the rectangle."
+                   ParameterSetName="CoordinateArgb",
+                   HelpMessage="The Y coordinate of the upper-left corner of the rectangle."
                    )]
         [Parameter(Mandatory=$true,
                    Position=2,
-                   ParameterSetName="RectangleColor",
-                   HelpMessage="The y-coordinate of the upper-left corner of the rectangle."
+                   ParameterSetName="CoordinateColor",
+                   HelpMessage="The Y coordinate of the upper-left corner of the rectangle."
+                   )]
+        [Parameter(Mandatory=$true,
+                   Position=2,
+                   ParameterSetName="CoordinateUseBackgroundColor",
+                   HelpMessage="The Y coordinate of the upper-left corner of the rectangle."
                    )]
         [Alias()]
         [int]
@@ -111,12 +141,17 @@ function Add-BlackBarToImage {
         # Specifies the width of the rectangle.
         [Parameter(Mandatory=$true,
                    Position=3,
-                   ParameterSetName="RectangleARGB",
+                   ParameterSetName="CoordinateArgb",
                    HelpMessage="The width of the rectangle."
                    )]
         [Parameter(Mandatory=$true,
                    Position=3,
-                   ParameterSetName="RectangleColor",
+                   ParameterSetName="CoordinateColor",
+                   HelpMessage="The width of the rectangle."
+                   )]
+        [Parameter(Mandatory=$true,
+                   Position=3,
+                   ParameterSetName="CoordinateUseBackgroundColor",
                    HelpMessage="The width of the rectangle."
                    )]
         [Alias()]
@@ -126,67 +161,108 @@ function Add-BlackBarToImage {
         # Specifies the height of the rectangle.
         [Parameter(Mandatory=$true,
                    Position=4,
-                   ParameterSetName="RectangleARGB",
+                   ParameterSetName="CoordinateArgb",
                    HelpMessage="The height of the rectangle."
                    )]
         [Parameter(Mandatory=$true,
                    Position=4,
-                   ParameterSetName="RectangleColor",
+                   ParameterSetName="CoordinateColor",
+                   HelpMessage="The height of the rectangle."
+                   )]
+        [Parameter(Mandatory=$true,
+                   Position=4,
+                   ParameterSetName="CoordinateUseBackgroundColor",
                    HelpMessage="The height of the rectangle."
                    )]
         [Alias()]
         [int]
         $Height,
 
+        # Specifies the System.Drawing.Rectangle object.
+        [Parameter(Mandatory=$true,
+                   Position=4,
+                   ParameterSetName="RectangleArgb",
+                   ValueFromPipelineByPropertyName=$true,
+                   HelpMessage="The System.Drawing.Rectangle object."
+                   )]
+        [Parameter(Mandatory=$true,
+                   Position=4,
+                   ParameterSetName="RectangleColor",
+                   ValueFromPipelineByPropertyName=$true,
+                   HelpMessage="The System.Drawing.Rectangle object."
+                   )]
+        [Parameter(Mandatory=$true,
+                   Position=4,
+                   ParameterSetName="RectangleUseBackgroundColor",
+                   ValueFromPipelineByPropertyName=$true,
+                   HelpMessage="The System.Drawing.Rectangle object."
+                   )]
+        [Alias()]
+        [System.Drawing.Rectangle]
+        $Rectangle,
+
         # Specifies an color by .Net Color struct or color name in [System.Drawing.Color] enums.
         [Parameter(ParameterSetName="CornerColor",
+                   ValueFromPipelineByPropertyName=$true,
                    Position=5
                    )]
-        [Parameter(ParameterSetName="RectangleColor",
+        [Parameter(ParameterSetName="CoordinateColor",
+                   ValueFromPipelineByPropertyName=$true,
                    Position=5
                    )]
         [System.Drawing.Color]
         $Color = [System.Drawing.Color]::Black,
 
         # Specifies an ARGB value for Alpha.
-        [Parameter(ParameterSetName="CornerARGB",
+        [Parameter(ParameterSetName="CornerArgb",
+                   ValueFromPipelineByPropertyName=$true,
                    Position=5
                    )]
-        [Parameter(ParameterSetName="RectangleARGB",
+        [Parameter(ParameterSetName="CoordinateArgb",
                    Position=5
                    )]
         [byte]
         $Alpha = 255,
         
         # Specifies an ARGB value for Red.
-        [Parameter(ParameterSetName="CornerARGB",
+        [Parameter(ParameterSetName="CornerArgb",
                    Position=6
                    )]
-        [Parameter(ParameterSetName="RectangleARGB",
+        [Parameter(ParameterSetName="CoordinateArgb",
                    Position=6
                    )]
         [byte]
         $Red = 0,
         
         # Specifies an ARGB value for Green.
-        [Parameter(ParameterSetName="CornerARGB",
+        [Parameter(ParameterSetName="CornerArgb",
                    Position=7
                    )]
-        [Parameter(ParameterSetName="RectangleARGB",
+        [Parameter(ParameterSetName="CoordinateArgb",
                    Position=7
                    )]
         [byte]
         $Green = 0,
         
         # Specifies an ARGB value for Blue.
-        [Parameter(ParameterSetName="CornerARGB",
+        [Parameter(ParameterSetName="CornerArgb",
                    Position=8
                    )]
-        [Parameter(ParameterSetName="RectangleARGB",
+        [Parameter(ParameterSetName="CoordinateArgb",
                    Position=8
                    )]
         [byte]
         $Blue = 0,
+
+        # Specifies an ARGB value for Blue.
+        [Parameter(ParameterSetName="CornerUseBackgroundColor"
+                   )]
+        [Parameter(ParameterSetName="CoordinateUseBackgroundColor"
+                   )]
+        [Parameter(ParameterSetName="RectangleUseBackgroundColor"
+                   )]
+        [switch]
+        $UseBackgroundColor,
 
         # Specifies the path to a directory to save in.
         [Parameter(Mandatory=$false,
@@ -209,25 +285,20 @@ function Add-BlackBarToImage {
     )
     
     begin {
-        #creating brush object
+        $imageExtensions = @(".gif", ".ico", ".jpeg", ".jpg", ".jpe", ".png")
+
+        # creating brush object
         
-        switch ($PSCmdlet.ParameterSetName) {
-            "CornerARGB" {
+        switch -Regex -CaseSensitive ($PSCmdlet.ParameterSetName) {
+            "Argb" {
                 $colorForBrush = [System.Drawing.Color]::FromArgb($Alpha, $Red, $Green, $Blue)
             }
-            "RectangleARGB" {
-                $colorForBrush = [System.Drawing.Color]::FromArgb($Alpha, $Red, $Green, $Blue)
-            }
-            "CornerColor" {
-                $colorForBrush = $Color
-            }
-            "RectangleColor" {
+            "Color" {
                 $colorForBrush = $Color
             }
         }
 
         $brush = [System.Drawing.SolidBrush]::new($colorForBrush)
-        $imageExtensions = @(".gif", ".ico", ".jpeg", ".jpg", ".jpe", ".png")
     }
     
     process {
@@ -241,41 +312,31 @@ function Add-BlackBarToImage {
                 continue
             }
 
-            #creating image object
+            # creating image object
             $bitmap = [System.Drawing.Bitmap]::new($convertedPath)
             $graphics = [System.Drawing.Graphics]::FromImage($bitmap)
 
-            switch ($PSCmdlet.ParameterSetName) {
-                "CornerARGB" {
-                    $blackBarTopLeftX = $TopLeftX
-                    $blackBarTopLeftY = $TopLeftY
+            # creating rectangle object
+            switch -Regex -CaseSensitive ($PSCmdlet.ParameterSetName) {
+                "Corner" {
                     $blackBarWidth = $BottomRightX - $TopLeftX
                     $blackBarHeight = $BottomRightY - $TopLeftY
+                    $rectangleToFill = [System.Drawing.Rectangle]::new($TopLeftX, $TopLeftY, $blackBarWidth, $blackBarHeight)
                 }
-                "CornerColor" {
-                    $blackBarTopLeftX = $TopLeftX
-                    $blackBarTopLeftY = $TopLeftY
-                    $blackBarWidth = $BottomRightX - $TopLeftX
-                    $blackBarHeight = $BottomRightY - $TopLeftY
+                "Coordinate" {
+                    $rectangleToFill = [System.Drawing.Rectangle]::new($X, $Y, $Width, $Height)
                 }
-                "RectangleARGB" {
-                    $blackBarTopLeftX = $X
-                    $blackBarTopLeftY = $Y
-                    $blackBarWidth = $Width
-                    $blackBarHeight = $Height
-                }
-                "RectangleColor" {
-                    $blackBarTopLeftX = $X
-                    $blackBarTopLeftY = $Y
-                    $blackBarWidth = $Width
-                    $blackBarHeight = $Height
+                "Rectangle" {
+                    $rectangleToFill = $Rectangle
                 }
             }
             
-            #creating rectangle object
-            $rectangle = [System.Drawing.Rectangle]::new($blackBarTopLeftX, $blackBarTopLeftY, $blackBarWidth, $blackBarHeight)
-
-            $graphics.FillRectangle($brush, $rectangle)
+            if ($PSCmdlet.ParameterSetName -match "UseBackgroundColor") {
+                $colorForBrush = $bitmap.GetPixel($rectangleToFill.X, $rectangleToFill.Y)
+                $brush = [System.Drawing.SolidBrush]::new($colorForBrush)
+            }
+            
+            $graphics.FillRectangle($brush, $rectangleToFill)
             $graphics.Dispose()
 
             # saving image
@@ -295,7 +356,7 @@ function Add-BlackBarToImage {
                 [string]$newPath = Join-Path $innerDestination $Name
             } else {
                 [string]$baseName = [System.IO.Path]::GetFileNameWithoutExtension($convertedPath)
-                [string]$newName = "$($baseName)_A$($colorForBrush.A)R$($colorForBrush.R)G$($colorForBrush.G)B$($colorForBrush.B)_X$($blackBarTopLeftX)Y$($blackBarTopLeftY)W$($blackBarWidth)H$($blackBarHeight)$($originalExtension)"
+                [string]$newName = "$($baseName)_A$($colorForBrush.A)R$($colorForBrush.R)G$($colorForBrush.G)B$($colorForBrush.B)_X$($rectangleToFill.X)Y$($rectangleToFill.Y)W$($rectangleToFill.Width)H$($rectangleToFill.Height)$($originalExtension)"
                 # [string]$newName = "$($baseName)_$(Get-Date -Format 'yyyy-MM-dd_HH-mm-ss')$($originalExtension)"
                 [string]$newPath = Join-Path $innerDestination $newName
             }
