@@ -180,19 +180,19 @@ function Add-BlackBarToImage {
 
         # Specifies the System.Drawing.Rectangle object.
         [Parameter(Mandatory=$true,
-                   Position=4,
+                   Position=1,
                    ParameterSetName="RectangleArgb",
                    ValueFromPipelineByPropertyName=$true,
                    HelpMessage="The System.Drawing.Rectangle object."
                    )]
         [Parameter(Mandatory=$true,
-                   Position=4,
+                   Position=1,
                    ParameterSetName="RectangleColor",
                    ValueFromPipelineByPropertyName=$true,
                    HelpMessage="The System.Drawing.Rectangle object."
                    )]
         [Parameter(Mandatory=$true,
-                   Position=4,
+                   Position=1,
                    ParameterSetName="RectangleUseBackgroundColor",
                    ValueFromPipelineByPropertyName=$true,
                    HelpMessage="The System.Drawing.Rectangle object."
