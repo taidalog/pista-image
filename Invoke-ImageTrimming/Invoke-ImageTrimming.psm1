@@ -59,7 +59,7 @@ function Invoke-ImageTrimming {
         # Specifies the x-coordinate of the upper-left corner of the rectangle.
         [Parameter(Mandatory=$true,
                    Position=1,
-                   ParameterSetName="Rectangle",
+                   ParameterSetName="Coordinate",
                    HelpMessage="The x-coordinate of the upper-left corner of the rectangle."
                    )]
         [Alias()]
@@ -69,7 +69,7 @@ function Invoke-ImageTrimming {
         # Specifies the y-coordinate of the upper-left corner of the rectangle.
         [Parameter(Mandatory=$true,
                    Position=2,
-                   ParameterSetName="Rectangle",
+                   ParameterSetName="Coordinate",
                    HelpMessage="The y-coordinate of the upper-left corner of the rectangle."
                    )]
         [Alias()]
@@ -79,7 +79,7 @@ function Invoke-ImageTrimming {
         # Specifies the width of the rectangle.
         [Parameter(Mandatory=$true,
                    Position=3,
-                   ParameterSetName="Rectangle",
+                   ParameterSetName="Coordinate",
                    HelpMessage="The width of the rectangle."
                    )]
         [Alias()]
@@ -89,12 +89,23 @@ function Invoke-ImageTrimming {
         # Specifies the  height of the rectangle.
         [Parameter(Mandatory=$true,
                    Position=4,
-                   ParameterSetName="Rectangle",
+                   ParameterSetName="Coordinate",
                    HelpMessage="The height of the rectangle."
                    )]
         [Alias()]
         [int]
         $Height,
+
+        # Specifies the System.Drawing.Rectangle object.
+        [Parameter(Mandatory=$true,
+                   Position=1,
+                   ParameterSetName="Rectangle",
+                   ValueFromPipelineByPropertyName=$true,
+                   HelpMessage="The System.Drawing.Rectangle object."
+                   )]
+        [Alias()]
+        [System.Drawing.Rectangle]
+        $Rectangle,
 
         # Blank
         [Parameter(Mandatory=$false,
@@ -190,11 +201,17 @@ function Invoke-ImageTrimming {
                     $rectangleParameters.Width  = $sourceBitmap.Width - ($Right + $Left)
                     $rectangleParameters.Height = $sourceBitmap.Height - ($Top + $Bottom)
                 }
-                "Rectangle" {
+                "Coordinate" {
                     $rectangleParameters.X = $X
                     $rectangleParameters.Y = $Y
                     $rectangleParameters.Width  = $Width
                     $rectangleParameters.Height = $Height
+                }
+                "Rectangle" {
+                    $rectangleParameters.X = $Rectangle.X
+                    $rectangleParameters.Y = $Rectangle.Y
+                    $rectangleParameters.Width  = $Rectangle.Width
+                    $rectangleParameters.Height = $Rectangle.Height
                 }
                 "Blank" {
                     if ($null -ne $Color) {
