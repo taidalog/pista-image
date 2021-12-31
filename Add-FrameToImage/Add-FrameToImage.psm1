@@ -20,12 +20,7 @@ function Add-FrameToImage {
 
         # Specifies the line width.
         [Parameter(Mandatory=$false,
-                   Position=1,
-                   ParameterSetName="ARGB"
-                   )]
-        [Parameter(Mandatory=$false,
-                   Position=1,
-                   ParameterSetName="Color"
+                   Position=1
                    )]
         [Alias()]
         [ValidateScript({$_ -gt 0})]
@@ -35,7 +30,8 @@ function Add-FrameToImage {
         # Specifies an color by .Net Color struct or color name in [System.Drawing.Color] enums.
         [Parameter(Mandatory=$false,
                    Position=2,
-                   ParameterSetName="Color"
+                   ParameterSetName="Color",
+                   ValueFromPipelineByPropertyName=$true
                    )]
         [Alias()]
         [System.Drawing.Color]
@@ -78,12 +74,7 @@ function Add-FrameToImage {
         $Blue = 0,
 
         # Specifies whether the line will be drawn inside the picture.
-        [Parameter(Mandatory=$false,
-                   ParameterSetName="ARGB"
-                   )]
-        [Parameter(Mandatory=$false,
-                   ParameterSetName="Color"
-                   )]
+        [Parameter(Mandatory=$false)]
         [switch]
         $Inner,
 
