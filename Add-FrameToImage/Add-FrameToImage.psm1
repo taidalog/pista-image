@@ -3,7 +3,7 @@ Set-StrictMode -Version Latest
 Add-Type -AssemblyName System.Drawing
 
 function Add-FrameToImage {
-    [CmdletBinding(DefaultParameterSetName="ARGB")]
+    [CmdletBinding(DefaultParameterSetName="Argb")]
     param (
         # Specifies a path to one or more locations.
         [Parameter(Mandatory=$true,
@@ -40,7 +40,7 @@ function Add-FrameToImage {
         # Specifies an ARGB value for Alpha.
         [Parameter(Mandatory=$false,
                    Position=2,
-                   ParameterSetName="ARGB"
+                   ParameterSetName="Argb"
                    )]
         [Alias()]
         [byte]
@@ -49,7 +49,7 @@ function Add-FrameToImage {
         # Specifies an ARGB value for Red.
         [Parameter(Mandatory=$false,
                    Position=3,
-                   ParameterSetName="ARGB"
+                   ParameterSetName="Argb"
                    )]
         [Alias()]
         [byte]
@@ -58,7 +58,7 @@ function Add-FrameToImage {
         # Specifies an ARGB value for Green.
         [Parameter(Mandatory=$false,
                    Position=4,
-                   ParameterSetName="ARGB"
+                   ParameterSetName="Argb"
                    )]
         [Alias()]
         [byte]
@@ -67,7 +67,7 @@ function Add-FrameToImage {
         # Specifies an ARGB value for Blue.
         [Parameter(Mandatory=$false,
                    Position=5,
-                   ParameterSetName="ARGB"
+                   ParameterSetName="Argb"
                    )]
         [Alias()]
         [byte]
@@ -99,9 +99,9 @@ function Add-FrameToImage {
     )
     
     begin {
-        #creating pen object
+        # creating pen object
         switch ($PSCmdlet.ParameterSetName) {
-            "ARGB" {
+            "Argb" {
                 $innerColor = [System.Drawing.Color]::FromArgb($Alpha, $Red, $Green, $Blue)
             }
             "Color" {
@@ -126,7 +126,7 @@ function Add-FrameToImage {
                 continue
             }
 
-            #creating image object
+            # creating image object
             
             if ($Inner) {
                 $bitmap = [System.drawing.Bitmap]::new($convertedPath)
@@ -138,7 +138,7 @@ function Add-FrameToImage {
                 $graphics.DrawImage($bitmapBeforeExpanding, $LineWidth, $LineWidth, $bitmapBeforeExpanding.Width, $bitmapBeforeExpanding.Height)
             }
 
-            #creating rectangle object
+            # creating rectangle object
             $rectangle = [System.Drawing.Rectangle]::new(0, 0, $bitmap.Width - 1, $bitmap.Height - 1)
 
             # drawing frame on image
@@ -163,7 +163,6 @@ function Add-FrameToImage {
             } else {
                 [string]$baseName = [System.IO.Path]::GetFileNameWithoutExtension($convertedPath)
                 [string]$newName = "$($baseName)_A$($innerColor.A)R$($innerColor.R)G$($innerColor.G)B$($innerColor.B)_$($LineWidth)px$($originalExtension)"
-                # [string]$newName = "$($baseName)_$(Get-Date -Format 'yyyy-MM-dd_HH-mm-ss')$($originalExtension)"
                 [string]$newPath = Join-Path $innerDestination $newName
             }
 
