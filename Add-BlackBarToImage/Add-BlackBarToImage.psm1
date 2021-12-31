@@ -210,6 +210,10 @@ function Add-BlackBarToImage {
                    ValueFromPipelineByPropertyName=$true,
                    Position=5
                    )]
+        [Parameter(ParameterSetName="RectangleColor",
+                   ValueFromPipelineByPropertyName=$true,
+                   Position=2
+                   )]
         [System.Drawing.Color]
         $Color = [System.Drawing.Color]::Black,
 
@@ -221,6 +225,9 @@ function Add-BlackBarToImage {
         [Parameter(ParameterSetName="CoordinateArgb",
                    Position=5
                    )]
+        [Parameter(ParameterSetName="RectangleArgb",
+                   Position=2
+                   )]
         [byte]
         $Alpha = 255,
         
@@ -230,6 +237,9 @@ function Add-BlackBarToImage {
                    )]
         [Parameter(ParameterSetName="CoordinateArgb",
                    Position=6
+                   )]
+        [Parameter(ParameterSetName="RectangleArgb",
+                   Position=3
                    )]
         [byte]
         $Red = 0,
@@ -241,6 +251,9 @@ function Add-BlackBarToImage {
         [Parameter(ParameterSetName="CoordinateArgb",
                    Position=7
                    )]
+        [Parameter(ParameterSetName="RectangleArgb",
+                   Position=4
+                   )]
         [byte]
         $Green = 0,
         
@@ -250,6 +263,9 @@ function Add-BlackBarToImage {
                    )]
         [Parameter(ParameterSetName="CoordinateArgb",
                    Position=8
+                   )]
+        [Parameter(ParameterSetName="RectangleArgb",
+                   Position=5
                    )]
         [byte]
         $Blue = 0,
