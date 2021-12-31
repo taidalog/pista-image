@@ -116,7 +116,8 @@ function Invoke-ImageTrimming {
 
         # Color
         [Parameter(Mandatory=$false,
-                   ParameterSetName="Blank"
+                   ParameterSetName="Blank",
+                   ValueFromPipelineByPropertyName=$true
                    )]
         [System.Drawing.Color]
         $Color,
