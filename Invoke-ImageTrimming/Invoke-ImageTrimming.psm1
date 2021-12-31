@@ -185,69 +185,55 @@ function Invoke-ImageTrimming {
                 continue
             }
             
-            #creating image object
+            # creating image object
             $sourceBitmap = [System.Drawing.Bitmap]::new($convertedPath)
-            
-            $rectangleParameters = [PSCustomObject]@{
-                X = $null
-                Y = $null
-                Width = $null
-                Height = $null
-            }
             
             switch ($PSCmdlet.ParameterSetName) {
                 "Padding" {
-                    $rectangleParameters.X = $Left
-                    $rectangleParameters.Y = $Top
-                    $rectangleParameters.Width  = $sourceBitmap.Width - ($Right + $Left)
-                    $rectangleParameters.Height = $sourceBitmap.Height - ($Top + $Bottom)
+                    $trimmingAreaRectangle = [System.Drawing.Rectangle]::new(
+                        $Left,
+                        $Top,
+                        $sourceBitmap.Width - ($Right + $Left),
+                        $sourceBitmap.Height - ($Top + $Bottom)
+                    )
                 }
                 "Coordinate" {
-                    $rectangleParameters.X = $X
-                    $rectangleParameters.Y = $Y
-                    $rectangleParameters.Width  = $Width
-                    $rectangleParameters.Height = $Height
+                    $trimmingAreaRectangle = [System.Drawing.Rectangle]::new($X, $Y, $Width, $Height)
                 }
                 "Rectangle" {
-                    $rectangleParameters.X = $Rectangle.X
-                    $rectangleParameters.Y = $Rectangle.Y
-                    $rectangleParameters.Width  = $Rectangle.Width
-                    $rectangleParameters.Height = $Rectangle.Height
+                    $trimmingAreaRectangle = $Rectangle
                 }
                 "Blank" {
                     if ($null -ne $Color) {
-                        $backGroundColor = $Color
+                        $brush = [System.Drawing.SolidBrush]::new($Color)
                     } else {
-                        $firstPixel = $sourceBitmap.GetPixel(0, 0)
-                        $backGroundColor = [System.Drawing.Color]::FromArgb($firstPixel.A, $firstPixel.R, $firstPixel.G, $firstPixel.B)
+                        $brush = [System.Drawing.SolidBrush]::new($sourceBitmap.GetPixel(0, 0))
                     }
 
-                    $blankRectangle = Get-NotBlankRange -Bitmap $sourceBitmap -Color $backGroundColor
+                    $notBlankRectangle = Get-NotBlankRange -Bitmap $sourceBitmap -Color $backGroundColor
                     
-                    $rectangleParameters.X = $blankRectangle.X - $MarginLeft
-                    $rectangleParameters.Y = $blankRectangle.Y - $MarginTop
-                    $rectangleParameters.Width  = $blankRectangle.Width + $MarginLeft + $MarginRight
-                    $rectangleParameters.Height = $blankRectangle.Height + $MarginTop + $MarginBottom
+                    $trimmingAreaRectangle = [System.Drawing.Rectangle]::new(
+                        $notBlankRectangle.X - $MarginLeft,
+                        $notBlankRectangle.Y - $MarginTop,
+                        $notBlankRectangle.Width + $MarginLeft + $MarginRight,
+                        $notBlankRectangle.Height + $MarginTop + $MarginBottom
+                    )
                 }
             }
             
-            #creating rectangle object
-            $sourceRecangle      = [System.Drawing.Rectangle]::new($rectangleParameters.X, $rectangleParameters.Y, $rectangleParameters.Width, $rectangleParameters.Height)
-            $destinationRecatngle = [System.Drawing.Rectangle]::new(0, 0, $sourceRecangle.Width, $sourceRecangle.Height)
-
-            $canvasBitmap = [System.Drawing.Bitmap]::new($destinationRecatngle.Width, $destinationRecatngle.Height)
-            $canvasGraphics = [System.Drawing.Graphics]::FromImage($canvasBitmap)
+            # creating rectangle object
+            $trimmedSizeRectangle = [System.Drawing.Rectangle]::new(0, 0, $trimmingAreaRectangle.Width, $trimmingAreaRectangle.Height)
+            $trimmedSizeBitmap = [System.Drawing.Bitmap]::new($trimmedSizeRectangle.Width, $trimmedSizeRectangle.Height)
+            $trimmedSizeGraphics = [System.Drawing.Graphics]::FromImage($trimmedSizeBitmap)
 
             if ($PSCmdlet.ParameterSetName -eq 'Blank') {
-                $brush = [System.Drawing.SolidBrush]::new($backGroundColor)
-                $canvasGraphics.FillRectangle($brush, $destinationRecatngle)
+                $trimmedSizeGraphics.FillRectangle($brush, $trimmedSizeRectangle)
             }
             
-            $canvasGraphics.DrawImage($sourceBitmap, $destinationRecatngle, $sourceRecangle, [System.Drawing.GraphicsUnit]::Pixel)
+            $trimmedSizeGraphics.DrawImage($sourceBitmap, $trimmedSizeRectangle, $trimmingAreaRectangle, [System.Drawing.GraphicsUnit]::Pixel)
 
-            $canvasGraphics.Dispose()
-            $sourceRecangle = $null
-            $destinationRecatngle = $null
+            $trimmedSizeGraphics.Dispose()
+            $trimmedSizeRectangle = $null
             $sourceBitmap.Dispose()
 
             # saving image
@@ -267,15 +253,15 @@ function Invoke-ImageTrimming {
                 [string]$newPath = Join-Path $innerDestination $Name
             } else {
                 [string]$baseName = [System.IO.Path]::GetFileNameWithoutExtension($convertedPath)
-                [string]$newName = "$($baseName)_X$($rectangleParameters.X)Y$($rectangleParameters.Y)W$($rectangleParameters.Width)H$($rectangleParameters.Height)$($originalExtension)"
-                # [string]$newName = "$($baseName)_$(Get-Date -Format 'yyyy-MM-dd_HH-mm-ss')$($originalExtension)"
+                [string]$newName = "$($baseName)_X$($trimmingAreaRectangle.X)Y$($trimmingAreaRectangle.Y)W$($trimmingAreaRectangle.Width)H$($trimmingAreaRectangle.Height)$($originalExtension)"
                 [string]$newPath = Join-Path $innerDestination $newName
             }
             
             Write-Verbose $newPath
             
-            $canvasBitmap.Save($newPath)
-            $canvasBitmap.Dispose()
+            $trimmedSizeBitmap.Save($newPath)
+            $trimmedSizeBitmap.Dispose()
+            $trimmingAreaRectangle = $null
             
             Get-Item -Path $newPath
         }
