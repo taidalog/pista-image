@@ -357,7 +357,6 @@ function Add-BlackBarToImage {
             } else {
                 [string]$baseName = [System.IO.Path]::GetFileNameWithoutExtension($convertedPath)
                 [string]$newName = "$($baseName)_A$($colorForBrush.A)R$($colorForBrush.R)G$($colorForBrush.G)B$($colorForBrush.B)_X$($rectangleToFill.X)Y$($rectangleToFill.Y)W$($rectangleToFill.Width)H$($rectangleToFill.Height)$($originalExtension)"
-                # [string]$newName = "$($baseName)_$(Get-Date -Format 'yyyy-MM-dd_HH-mm-ss')$($originalExtension)"
                 [string]$newPath = Join-Path $innerDestination $newName
             }
             
