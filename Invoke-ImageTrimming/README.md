@@ -127,7 +127,7 @@ Get-ChildItem *.jpg | Invoke-ImageTrimming -X 600 -Y 200 -Width 100  -Height 20 
 In this example `Invoke-ImageTrimming` uses the **Destination** parameter to save the result in the specifued directory. **Destination** parameter accepts a scriptblock. In this case, each trimmed item will be saved in the 'trimmed' directory in the parent directory of each piped item.
 
 ```ps1
-Get-ChildItem *.jpg | Invoke-ImageTrimming -X 600 -Y 200 -Width 100  -Height 20 -Destination { $_.DirectoryName + \trimmed\ }
+Get-ChildItem *.jpg | Invoke-ImageTrimming -X 600 -Y 200 -Width 100  -Height 20 -Destination { Join-Path $_.DirectoryName \trimmed\ }
 ```
 
 |piped items|destination|
