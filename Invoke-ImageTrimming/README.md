@@ -72,7 +72,7 @@ Get-ChildItem *.jpg | Invoke-ImageTrimming -Top 100 -Right 120 -Bottom 380 -Left
 In this example `Invoke-ImageTrimming` uses the **X**, **Y**, **Width** and **Height** parameters to specify trimming area. The pixel at (400, 100) will be the top left corner, and the area of 1400 pixels wide and 600 pixels high will be returned.
 
 ```ps1
-Get-ChildItem *.jpg | Invoke-ImageTrimming -X 400 -Y 100 -Width 1400  -Height 600
+Get-ChildItem *.jpg | Invoke-ImageTrimming -X 400 -Y 100 -Width 1400 -Height 600
 ```
 
 
@@ -118,7 +118,7 @@ Get-ChildItem *.jpg | Invoke-ImageTrimming -Blank -MarginTop 20 -MarginRight 20 
 In this example `Invoke-ImageTrimming` uses the **Destination** parameter to save the result in the specifued directory.
 
 ```ps1
-Get-ChildItem *.jpg | Invoke-ImageTrimming -X 600 -Y 200 -Width 100  -Height 20 -Destination .\trimmed\
+Get-ChildItem *.jpg | Invoke-ImageTrimming -X 600 -Y 200 -Width 100 -Height 20 -Destination .\trimmed\
 ```
 
 
@@ -127,7 +127,7 @@ Get-ChildItem *.jpg | Invoke-ImageTrimming -X 600 -Y 200 -Width 100  -Height 20 
 In this example `Invoke-ImageTrimming` uses the **Destination** parameter to save the result in the specifued directory. **Destination** parameter accepts a scriptblock. In this case, each trimmed item will be saved in the 'trimmed' directory in the parent directory of each piped item.
 
 ```ps1
-Get-ChildItem *.jpg | Invoke-ImageTrimming -X 600 -Y 200 -Width 100  -Height 20 -Destination { Join-Path $_.DirectoryName \trimmed\ }
+Get-ChildItem *.jpg | Invoke-ImageTrimming -X 600 -Y 200 -Width 100 -Height 20 -Destination { Join-Path $_.DirectoryName \trimmed\ }
 ```
 
 |piped items|destination|
@@ -141,7 +141,7 @@ Get-ChildItem *.jpg | Invoke-ImageTrimming -X 600 -Y 200 -Width 100  -Height 20 
 In this example `Invoke-ImageTrimming` uses the **Name** parameter to save the result with the specifued name. **Name** parameter accepts a scriptblock.
 
 ```ps1
-Get-ChildItem *.jpg | Invoke-ImageTrimming -X 600 -Y 200 -Width 100  -Height 20 -Name { $_.BaseName + '_' + (Get-Date -Format 'yyyy-MM-dd-HH-mm-ss') + $_.Extension }
+Get-ChildItem *.jpg | Invoke-ImageTrimming -X 600 -Y 200 -Width 100 -Height 20 -Name { $_.BaseName + '_' + (Get-Date -Format 'yyyy-MM-dd-HH-mm-ss') + $_.Extension }
 ```
 
 
