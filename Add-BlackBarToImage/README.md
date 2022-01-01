@@ -7,118 +7,118 @@ Adds a black bar to an image in order to hide something in the image.
 
 ```
 Add-BlackBarToImage
-    -Path <string[]>
-    -TopLeftX <int>
-    -TopLeftY <int>
-    -BottomRightX <int>
-    -BottomRightY <int>
+    -Path <String[]>
+    -TopLeftX <Int32>
+    -TopLeftY <Int32>
+    -BottomRightX <Int32>
+    -BottomRightY <Int32>
     [-Alpha] <byte>
     [-Red] <byte>
     [-Green] <byte>
     [-Blue] <byte>
-    [-Destination] <string>
-    [-Name] <string>
+    [-Destination] <String>
+    [-Name] <String>
     [<CommonParameters>]
 ```
 
 ```
 Add-BlackBarToImage
-    -Path <string[]>
-    -TopLeftX <int>
-    -TopLeftY <int>
-    -BottomRightX <int>
-    -BottomRightY <int>
+    -Path <String[]>
+    -TopLeftX <Int32>
+    -TopLeftY <Int32>
+    -BottomRightX <Int32>
+    -BottomRightY <Int32>
     [-Color] <System.Drawing.Color>
-    [-Destination] <string>
-    [-Name] <string>
+    [-Destination] <String>
+    [-Name] <String>
     [<CommonParameters>]
 ```
 
 ```
 Add-BlackBarToImage
-    -Path <string[]>
-    -TopLeftX <int>
-    -TopLeftY <int>
-    -BottomRightX <int>
-    -BottomRightY <int>
-    [-UseBackgroundColor] <switch>
-    [-Destination] <string>
-    [-Name] <string>
+    -Path <String[]>
+    -TopLeftX <Int32>
+    -TopLeftY <Int32>
+    -BottomRightX <Int32>
+    -BottomRightY <Int32>
+    [-UseBackgroundColor]
+    [-Destination] <String>
+    [-Name] <String>
     [<CommonParameters>]
 ```
 
 ```
 Add-BlackBarToImage
-    -Path <string[]>
-    -X <int>
-    -Y <int>
-    -Width <int>
-    -Height <int>
+    -Path <String[]>
+    -X <Int32>
+    -Y <Int32>
+    -Width <Int32>
+    -Height <Int32>
     [-Alpha] <byte>
     [-Red] <byte>
     [-Green] <byte>
     [-Blue] <byte>
-    [-Destination] <string>
-    [-Name] <string>
+    [-Destination] <String>
+    [-Name] <String>
     [<CommonParameters>]
 ```
 
 ```
 Add-BlackBarToImage
-    -Path <string[]>
-    -X <int>
-    -Y <int>
-    -Width <int>
-    -Height <int>
+    -Path <String[]>
+    -X <Int32>
+    -Y <Int32>
+    -Width <Int32>
+    -Height <Int32>
     [-Color] <System.Drawing.Color>
-    [-Destination] <string>
-    [-Name] <string>
+    [-Destination] <String>
+    [-Name] <String>
     [<CommonParameters>]
 ```
 
 ```
 Add-BlackBarToImage
-    -Path <string[]>
-    -X <int>
-    -Y <int>
-    -Width <int>
-    -Height <int>
-    [-UseBackgroundColor] <switch>
-    [-Destination] <string>
-    [-Name] <string>
+    -Path <String[]>
+    -X <Int32>
+    -Y <Int32>
+    -Width <Int32>
+    -Height <Int32>
+    [-UseBackgroundColor]
+    [-Destination] <String>
+    [-Name] <String>
     [<CommonParameters>]
 ```
 
 ```
 Add-BlackBarToImage
-    -Path <string[]>
+    -Path <String[]>
     -Rectangle <System.Drawing.Rectangle>
     [-Alpha] <byte>
     [-Red] <byte>
     [-Green] <byte>
     [-Blue] <byte>
-    [-Destination] <string>
-    [-Name] <string>
+    [-Destination] <String>
+    [-Name] <String>
     [<CommonParameters>]
 ```
 
 ```
 Add-BlackBarToImage
-    -Path <string[]>
+    -Path <String[]>
     -Rectangle <System.Drawing.Rectangle>
     [-Color] <System.Drawing.Color>
-    [-Destination] <string>
-    [-Name] <string>
+    [-Destination] <String>
+    [-Name] <String>
     [<CommonParameters>]
 ```
 
 ```
 Add-BlackBarToImage
-    -Path <string[]>
+    -Path <String[]>
     -Rectangle <System.Drawing.Rectangle>
-    [-UseBackgroundColor] <switch>
-    [-Destination] <string>
-    [-Name] <string>
+    [-UseBackgroundColor]
+    [-Destination] <String>
+    [-Name] <String>
     [<CommonParameters>]
 ```
 
@@ -195,9 +195,9 @@ Get-ChildItem *.jpg | Add-BlackBarToImage -X 154 -Y 65 -Width 1566 -Height 30 -N
 
 ## Inputs
 
-System.IO.FileInfo
+**System.IO.FileInfo**
 
 
 ## Outputs
 
-System.IO.FileInfo
+**System.IO.FileInfo**

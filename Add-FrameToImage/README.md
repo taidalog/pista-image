@@ -96,9 +96,9 @@ Get-ChildItem *.jpg | Add-FrameToImage -Name { $_.BaseName + '_' + (Get-Date -Fo
 
 ## Inputs
 
-System.IO.FileInfo
+**System.IO.FileInfo**
 
 
 ## Outputs
 
-System.IO.FileInfo
+**System.IO.FileInfo**

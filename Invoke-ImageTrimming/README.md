@@ -7,48 +7,48 @@ Trims an image.
 
 ```
 Invoke-ImageTrimming
-    -Path <string[]>
-    -Top <int>
-    -Right <int>
-    -Bottom <int>
-    -Left <int>
-    [-Destination] <string>
-    [-Name] <string>
+    -Path <String[]>
+    -Top <Int32>
+    -Right <Int32>
+    -Bottom <Int32>
+    -Left <Int32>
+    [-Destination] <String>
+    [-Name] <String>
     [<CommonParameters>]
 ```
 
 ```
 Invoke-ImageTrimming
-    -Path <string[]>
-    -X <int>
-    -Y <int>
-    -Width <int>
-    -Height <int>
-    [-Destination] <string>
-    [-Name] <string>
+    -Path <String[]>
+    -X <Int32>
+    -Y <Int32>
+    -Width <Int32>
+    -Height <Int32>
+    [-Destination] <String>
+    [-Name] <String>
     [<CommonParameters>]
 ```
 
 ```
 Invoke-ImageTrimming
-    -Path <string[]>
+    -Path <String[]>
     -Rectangle <Syste.Drawing.Rectangle>
-    [-Destination] <string>
-    [-Name] <string>
+    [-Destination] <String>
+    [-Name] <String>
     [<CommonParameters>]
 ```
 
 ```
 Invoke-ImageTrimming
-    -Path <string[]>
-    -Blank <switch>
+    -Path <String[]>
+    -Blank
     [-Color] <System.Drawing.Color>
-    [-MarginTop] <int>
-    [-MarginRight] <int>
-    [-MarginBottom] <int>
-    [-MarginLeft] <int>
-    [-Destination] <string>
-    [-Name] <string>
+    [-MarginTop] <Int32>
+    [-MarginRight] <Int32>
+    [-MarginBottom] <Int32>
+    [-MarginLeft] <Int32>
+    [-Destination] <String>
+    [-Name] <String>
     [<CommonParameters>]
 ```
 
@@ -149,9 +149,9 @@ Get-ChildItem *.jpg | Invoke-ImageTrimming -X 600 -Y 200 -Width 100 -Height 20 -
 
 ## Inputs
 
-System.IO.FileInfo
+**System.IO.FileInfo**
 
 
 ## Outputs
 
-System.IO.FileInfo
+**System.IO.FileInfo**
