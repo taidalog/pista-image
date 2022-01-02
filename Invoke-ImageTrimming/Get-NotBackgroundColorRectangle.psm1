@@ -41,8 +41,7 @@ function Get-NotBackgroundColorRectangle {
         if ($null -ne $Color) {
             $targetColorToArgb = $Color.ToArgb()
         } else {
-            $topLeftPixel = $Bitmap.GetPixel(0, 0)
-            $targetColorToArgb = [System.Drawing.Color]::FromArgb($topLeftPixel.A, $topLeftPixel.R, $topLeftPixel.G, $topLeftPixel.B).ToArgb()
+            $targetColorToArgb = $Bitmap.GetPixel(0, 0).ToArgb()
         }
 
         $result = [PSCustomObject]@{
