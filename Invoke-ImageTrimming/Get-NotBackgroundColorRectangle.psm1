@@ -2,7 +2,7 @@ Set-StrictMode -Version Latest
 
 Add-Type -AssemblyName System.Drawing
 
-function Get-NotBlankRange {
+function Get-NotBackgroundColorRectangle {
     [CmdletBinding(DefaultParameterSetName="Path")]
     param (
         # Specifies a path to one or more locations.

@@ -2,7 +2,7 @@ Set-StrictMode -Version Latest
 
 Add-Type -AssemblyName System.Drawing
 
-Import-Module (Join-Path $PSScriptRoot Get-NotBlankRange.psm1) -Force
+Import-Module (Join-Path $PSScriptRoot Get-NotBackgroundColorRectangle.psm1) -Force
 
 function Invoke-ImageTrimming {
     [CmdletBinding(DefaultParameterSetName="Padding")]
@@ -56,10 +56,70 @@ function Invoke-ImageTrimming {
         [int]
         $Left = 0,
 
+        # Specifies an x coordinate of top left corner.
+        [Parameter(Mandatory=$true,
+                   Position=1,
+                   ParameterSetName="PointsByInt32",
+                   HelpMessage="X coordinate of top left corner."
+                   )]
+        [Alias()]
+        [int]
+        $X1,
+        
+        # Specifies a y coordinate of top left corner.
+        [Parameter(Mandatory=$true,
+                   Position=2,
+                   ParameterSetName="PointsByInt32",
+                   HelpMessage="Y coordinate of top left corner."
+                   )]
+        [Alias()]
+        [int]
+        $Y1,
+        
+        # Specifies an x coordinate of bottom right corner.
+        [Parameter(Mandatory=$true,
+                   Position=3,
+                   ParameterSetName="PointsByInt32",
+                   HelpMessage="X coordinate of bottom right corner."
+                   )]
+        [Alias()]
+        [int]
+        $X2,
+        
+        # Specifies a y coordinate of bottom right corner.
+        [Parameter(Mandatory=$true,
+                   Position=4,
+                   ParameterSetName="PointsByInt32",
+                   HelpMessage="Y coordinate of bottom right corner."
+                   )]
+        [Alias()]
+        [int]
+        $Y2,
+
+        # Specifies a top left point.
+        [Parameter(Mandatory=$true,
+                   Position=1,
+                   ParameterSetName="Points",
+                   HelpMessage="Top left point."
+                   )]
+        [Alias()]
+        [System.Drawing.Point]
+        $Point1,
+
+        # Specifies a right bottom point.
+        [Parameter(Mandatory=$true,
+                   Position=2,
+                   ParameterSetName="Points",
+                   HelpMessage="Right bottom point."
+                   )]
+        [Alias()]
+        [System.Drawing.Point]
+        $Point2,
+        
         # Specifies the x-coordinate of the upper-left corner of the rectangle.
         [Parameter(Mandatory=$true,
                    Position=1,
-                   ParameterSetName="Coordinate",
+                   ParameterSetName="RectangleByInt32",
                    HelpMessage="The x-coordinate of the upper-left corner of the rectangle."
                    )]
         [Alias()]
@@ -69,7 +129,7 @@ function Invoke-ImageTrimming {
         # Specifies the y-coordinate of the upper-left corner of the rectangle.
         [Parameter(Mandatory=$true,
                    Position=2,
-                   ParameterSetName="Coordinate",
+                   ParameterSetName="RectangleByInt32",
                    HelpMessage="The y-coordinate of the upper-left corner of the rectangle."
                    )]
         [Alias()]
@@ -79,7 +139,7 @@ function Invoke-ImageTrimming {
         # Specifies the width of the rectangle.
         [Parameter(Mandatory=$true,
                    Position=3,
-                   ParameterSetName="Coordinate",
+                   ParameterSetName="RectangleByInt32",
                    HelpMessage="The width of the rectangle."
                    )]
         [Alias()]
@@ -89,7 +149,7 @@ function Invoke-ImageTrimming {
         # Specifies the  height of the rectangle.
         [Parameter(Mandatory=$true,
                    Position=4,
-                   ParameterSetName="Coordinate",
+                   ParameterSetName="RectangleByInt32",
                    HelpMessage="The height of the rectangle."
                    )]
         [Alias()]
@@ -107,52 +167,45 @@ function Invoke-ImageTrimming {
         [System.Drawing.Rectangle]
         $Rectangle,
 
-        # Blank
-        [Parameter(Mandatory=$false,
-                   ParameterSetName="Blank"
+        # TrimBackgroundColor
+        [Parameter(ParameterSetName="TrimBackgroundColor"
                    )]
         [switch]
-        $Blank,
+        $TrimBackgroundColor,
 
         # Color
-        [Parameter(Mandatory=$false,
-                   ParameterSetName="Blank",
+        [Parameter(ParameterSetName="TrimBackgroundColor",
                    ValueFromPipelineByPropertyName=$true
                    )]
         [System.Drawing.Color]
         $Color,
 
         # Specifies the margin for top.
-        [Parameter(Mandatory=$false,
-                   ParameterSetName="Blank"
+        [Parameter(ParameterSetName="TrimBackgroundColor"
                    )]
         [int]
         $MarginTop = 0,
 
         # Specifies the margin for right.
-        [Parameter(Mandatory=$false,
-                   ParameterSetName="Blank"
+        [Parameter(ParameterSetName="TrimBackgroundColor"
                    )]
         [int]
         $MarginRight = 0,
 
         # Specifies the margin for bottom.
-        [Parameter(Mandatory=$false,
-                   ParameterSetName="Blank"
+        [Parameter(ParameterSetName="TrimBackgroundColor"
                    )]
         [int]
         $MarginBottom = 0,
 
         # Specifies the margin for left.
-        [Parameter(Mandatory=$false,
-                   ParameterSetName="Blank"
+        [Parameter(ParameterSetName="TrimBackgroundColor"
                    )]
         [int]
         $MarginLeft = 0,
 
         # Specifies the path to a directory to save in.
-        [Parameter(Mandatory=$false,
-                   ValueFromPipelineByPropertyName=$true
+        [Parameter(ValueFromPipelineByPropertyName=$true
                    )]
         [Alias("DirectoryName")]
         [ValidateNotNullOrEmpty()]
@@ -161,8 +214,7 @@ function Invoke-ImageTrimming {
         $Destination,
 
         # Specifies the name to save as.
-        [Parameter(Mandatory=$false,
-                   ValueFromPipelineByPropertyName=$true
+        [Parameter(ValueFromPipelineByPropertyName=$true
                    )]
         [Alias()]
         [ValidateNotNullOrEmpty()]
@@ -197,26 +249,37 @@ function Invoke-ImageTrimming {
                         $sourceBitmap.Height - ($Top + $Bottom)
                     )
                 }
-                "Coordinate" {
+                "PointsByInt32" {
+                    $trimmingAreaRectangle = [System.Drawing.Rectangle]::new($X1, $Y1, $X2 - $X1, $Y2 - $Y1)
+                }
+                "Points" {
+                    $trimmingAreaRectangle = [System.Drawing.Rectangle]::new(
+                        $Point1.X,
+                        $Point1.Y,
+                        $Point2.X - $Point1.X,
+                        $Point2.Y - $Point1.Y
+                    )
+                }
+                "RectangleByInt32" {
                     $trimmingAreaRectangle = [System.Drawing.Rectangle]::new($X, $Y, $Width, $Height)
                 }
                 "Rectangle" {
                     $trimmingAreaRectangle = $Rectangle
                 }
-                "Blank" {
+                "TrimBackgroundColor" {
                     if ($null -ne $Color) {
                         $brush = [System.Drawing.SolidBrush]::new($Color)
                     } else {
                         $brush = [System.Drawing.SolidBrush]::new($sourceBitmap.GetPixel(0, 0))
                     }
 
-                    $notBlankRectangle = Get-NotBlankRange -Bitmap $sourceBitmap -Color $backGroundColor
+                    $notBackgroundColorRectangle = Get-NotBackgroundColorRectangle -Bitmap $sourceBitmap -Color $brush.Color
                     
                     $trimmingAreaRectangle = [System.Drawing.Rectangle]::new(
-                        $notBlankRectangle.X - $MarginLeft,
-                        $notBlankRectangle.Y - $MarginTop,
-                        $notBlankRectangle.Width + $MarginLeft + $MarginRight,
-                        $notBlankRectangle.Height + $MarginTop + $MarginBottom
+                        $notBackgroundColorRectangle.X - $MarginLeft,
+                        $notBackgroundColorRectangle.Y - $MarginTop,
+                        $notBackgroundColorRectangle.Width + $MarginLeft + $MarginRight,
+                        $notBackgroundColorRectangle.Height + $MarginTop + $MarginBottom
                     )
                 }
             }
@@ -226,7 +289,7 @@ function Invoke-ImageTrimming {
             $trimmedSizeBitmap = [System.Drawing.Bitmap]::new($trimmedSizeRectangle.Width, $trimmedSizeRectangle.Height)
             $trimmedSizeGraphics = [System.Drawing.Graphics]::FromImage($trimmedSizeBitmap)
 
-            if ($PSCmdlet.ParameterSetName -eq 'Blank') {
+            if ($PSCmdlet.ParameterSetName -eq 'TrimBackgroundColor') {
                 $trimmedSizeGraphics.FillRectangle($brush, $trimmedSizeRectangle)
             }
             
@@ -268,7 +331,7 @@ function Invoke-ImageTrimming {
     }
     
     end {
-        if ($PSCmdlet.ParameterSetName -eq 'Blank') {
+        if ($PSCmdlet.ParameterSetName -eq 'TrimBackgroundColor') {
             $brush.Dispose()
         }
     }
