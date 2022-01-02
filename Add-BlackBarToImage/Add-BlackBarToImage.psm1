@@ -155,7 +155,12 @@ function Add-BlackBarToImage {
         [Alias()]
         [ValidateNotNullOrEmpty()]
         [string]
-        $Name
+        $Name,
+
+        # Specifies whether to output a Bitmap object.
+        [Parameter()]
+        [switch]
+        $AsBitmap
     )
     
     begin {
@@ -209,33 +214,38 @@ function Add-BlackBarToImage {
             $graphics.FillRectangle($brush, $rectangleToFill)
             $graphics.Dispose()
 
-            # saving image
-            if ($Destination -ne '') {
-                [string]$innerDestination = Convert-Path -Path $Destination
+            if ($AsBitmap) {
+                $bitmap.Clone()
             } else {
-                [string]$innerDestination = Split-Path $convertedPath -Parent
+                # saving image
+                if ($Destination -ne '') {
+                    [string]$innerDestination = Convert-Path -Path $Destination
+                } else {
+                    [string]$innerDestination = Split-Path $convertedPath -Parent
+                }
+
+                Write-Verbose $innerDestination
+                
+                Write-Verbose $Name
+
+                [string]$originalName = Split-Path $convertedPath -Leaf
+
+                if ($Name -notin @('', $originalName)) {
+                    [string]$newPath = Join-Path $innerDestination $Name
+                } else {
+                    [string]$baseName = [System.IO.Path]::GetFileNameWithoutExtension($convertedPath)
+                    [string]$newName = "$($baseName)_A$($brush.Color.A)R$($brush.Color.R)G$($brush.Color.G)B$($brush.Color.B)_X$($rectangleToFill.X)Y$($rectangleToFill.Y)W$($rectangleToFill.Width)H$($rectangleToFill.Height)$($originalExtension)"
+                    [string]$newPath = Join-Path $innerDestination $newName
+                }
+                
+                Write-Verbose $newPath
+                
+                $bitmap.Save($newPath)
+
+                Get-Item -Path $newPath
             }
-
-            Write-Verbose $innerDestination
             
-            Write-Verbose $Name
-
-            [string]$originalName = Split-Path $convertedPath -Leaf
-
-            if ($Name -notin @('', $originalName)) {
-                [string]$newPath = Join-Path $innerDestination $Name
-            } else {
-                [string]$baseName = [System.IO.Path]::GetFileNameWithoutExtension($convertedPath)
-                [string]$newName = "$($baseName)_A$($brush.Color.A)R$($brush.Color.R)G$($brush.Color.G)B$($brush.Color.B)_X$($rectangleToFill.X)Y$($rectangleToFill.Y)W$($rectangleToFill.Width)H$($rectangleToFill.Height)$($originalExtension)"
-                [string]$newPath = Join-Path $innerDestination $newName
-            }
-            
-            Write-Verbose $newPath
-            
-            $bitmap.Save($newPath)
             $bitmap.Dispose()
-            
-            Get-Item -Path $newPath
         }
     }
     
