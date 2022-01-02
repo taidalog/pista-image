@@ -165,6 +165,59 @@ function Add-BlackBarToImage {
     
     begin {
         $imageExtensions = @(".gif", ".ico", ".jpeg", ".jpg", ".jpe", ".png")
+
+        $rectangleCreator = {
+            switch ($PSCmdlet.ParameterSetName) {
+                "PointsByInt32" {
+                    [System.Drawing.Rectangle]::new($X1, $Y1, $X2 - $X1, $Y2 - $Y1)
+                }
+                "Points" {
+                    [System.Drawing.Rectangle]::new(
+                        $Point1.X,
+                        $Point1.Y,
+                        $Point2.X - $Point1.X + 1,
+                        $Point2.Y - $Point1.Y + 1
+                    )
+                }
+                "RectangleByInt32" {
+                    [System.Drawing.Rectangle]::new($X, $Y, $Width, $Height)
+                }
+                "Rectangle" {
+                    $Rectangle
+                }
+            }
+        }
+
+        $brushCreator = {
+            if ($UseBackgroundColor) {
+                $colorForBrush = $bitmap.GetPixel($rectangleToFill.X, $rectangleToFill.Y)
+                [System.Drawing.SolidBrush]::new($colorForBrush)
+            } else {
+                [System.Drawing.SolidBrush]::new($Color)
+            }
+        }
+
+        $newPathCreator = {
+            if ($Destination -ne '') {
+                [string]$innerDestination = Convert-Path -Path $Destination
+            } else {
+                [string]$innerDestination = Split-Path $convertedPath -Parent
+            }
+
+            Write-Verbose $innerDestination
+            
+            Write-Verbose $Name
+
+            [string]$originalName = Split-Path $convertedPath -Leaf
+
+            if ($Name -notin @('', $originalName)) {
+                Join-Path $innerDestination $Name
+            } else {
+                [string]$baseName = [System.IO.Path]::GetFileNameWithoutExtension($convertedPath)
+                [string]$newName = "$($baseName)_A$($brush.Color.A)R$($brush.Color.R)G$($brush.Color.G)B$($brush.Color.B)_X$($rectangleToFill.X)Y$($rectangleToFill.Y)W$($rectangleToFill.Width)H$($rectangleToFill.Height)$($originalExtension)"
+                Join-Path $innerDestination $newName
+            }
+        }
     }
     
     process {
@@ -183,33 +236,10 @@ function Add-BlackBarToImage {
             $graphics = [System.Drawing.Graphics]::FromImage($bitmap)
 
             # creating rectangle object
-            switch ($PSCmdlet.ParameterSetName) {
-                "PointsByInt32" {
-                    $rectangleToFill = [System.Drawing.Rectangle]::new($X1, $Y1, $X2 - $X1, $Y2 - $Y1)
-                }
-                "Points" {
-                    $rectangleToFill = [System.Drawing.Rectangle]::new(
-                        $Point1.X,
-                        $Point1.Y,
-                        $Point2.X - $Point1.X + 1,
-                        $Point2.Y - $Point1.Y + 1
-                    )
-                }
-                "RectangleByInt32" {
-                    $rectangleToFill = [System.Drawing.Rectangle]::new($X, $Y, $Width, $Height)
-                }
-                "Rectangle" {
-                    $rectangleToFill = $Rectangle
-                }
-            }
+            $rectangleToFill = &$rectangleCreator
             
             # creating brush object
-            if ($UseBackgroundColor) {
-                $colorForBrush = $bitmap.GetPixel($rectangleToFill.X, $rectangleToFill.Y)
-                $brush = [System.Drawing.SolidBrush]::new($colorForBrush)
-            } else {
-                $brush = [System.Drawing.SolidBrush]::new($Color)
-            }
+            $brush = &$brushCreator
             
             $graphics.FillRectangle($brush, $rectangleToFill)
             $graphics.Dispose()
@@ -218,26 +248,7 @@ function Add-BlackBarToImage {
                 $bitmap.Clone()
             } else {
                 # saving image
-                if ($Destination -ne '') {
-                    [string]$innerDestination = Convert-Path -Path $Destination
-                } else {
-                    [string]$innerDestination = Split-Path $convertedPath -Parent
-                }
-
-                Write-Verbose $innerDestination
-                
-                Write-Verbose $Name
-
-                [string]$originalName = Split-Path $convertedPath -Leaf
-
-                if ($Name -notin @('', $originalName)) {
-                    [string]$newPath = Join-Path $innerDestination $Name
-                } else {
-                    [string]$baseName = [System.IO.Path]::GetFileNameWithoutExtension($convertedPath)
-                    [string]$newName = "$($baseName)_A$($brush.Color.A)R$($brush.Color.R)G$($brush.Color.G)B$($brush.Color.B)_X$($rectangleToFill.X)Y$($rectangleToFill.Y)W$($rectangleToFill.Width)H$($rectangleToFill.Height)$($originalExtension)"
-                    [string]$newPath = Join-Path $innerDestination $newName
-                }
-                
+                $newPath = &$newPathCreator
                 Write-Verbose $newPath
                 
                 $bitmap.Save($newPath)
